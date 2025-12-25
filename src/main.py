@@ -18,7 +18,7 @@ from models.reranker import *
 from utils import utils
 
 
-def parse_global_args(parser):
+def parse_global_args(parser : argparse.ArgumentParser):
 	parser.add_argument('--gpu', type=str, default='0',
 						help='Set CUDA_VISIBLE_DEVICES, default for CPU only')
 	parser.add_argument('--verbose', type=int, default=logging.INFO,
@@ -60,7 +60,7 @@ def main():
 		logging.info('Load corpus from {}'.format(corpus_path))
 		corpus = pickle.load(open(corpus_path, 'rb'))
 	else:
-		corpus = reader_name(args)
+		corpus = reader_name(args) # 实例化reader
 		logging.info('Save corpus to {}'.format(corpus_path))
 		pickle.dump(corpus, open(corpus_path, 'wb'))
 
@@ -76,7 +76,7 @@ def main():
 		data_dict[phase].prepare()
 
 	# Run model
-	runner = runner_name(args)
+	runner = runner_name(args) 
 	logging.info('Test Before Training: ' + runner.print_res(data_dict['test']))
 	if args.load > 0:
 		model.load_model()
@@ -171,6 +171,8 @@ if __name__ == '__main__':
 	parser = reader_name.parse_data_args(parser)
 	parser = runner_name.parse_runner_args(parser)
 	parser = model_name.parse_model_args(parser)
+	args: argparse.Namespace
+	extras: list[str]
 	args, extras = parser.parse_known_args()
 	
 	args.data_appendix = '' # save different version of data for, e.g., context-aware readers with different groups of context

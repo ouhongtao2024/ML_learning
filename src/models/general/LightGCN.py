@@ -6,7 +6,8 @@ import torch
 import numpy as np
 import torch.nn as nn
 import scipy.sparse as sp
-
+import argparse
+import helpers.BaseReader
 from models.BaseModel import GeneralModel
 from models.BaseImpressionModel import ImpressionModel
 
@@ -52,7 +53,7 @@ class LightGCNBase(object):
 
 		return norm_adj_mat.tocsr()
 
-	def _base_init(self, args, corpus):
+	def _base_init(self, args : argparse.Namespace, corpus : helpers.BaseReader.BaseReader):
 		self.emb_size = args.emb_size
 		self.n_layers = args.n_layers
 		self.norm_adj = self.build_adjmat(corpus.n_users, corpus.n_items, corpus.train_clicked_set)
@@ -62,7 +63,7 @@ class LightGCNBase(object):
 	def _base_define_params(self):	
 		self.encoder = LGCNEncoder(self.user_num, self.item_num, self.emb_size, self.norm_adj, self.n_layers)
 
-	def forward(self, feed_dict):
+	def forward(self, feed_dict : dict[str,any]):
 		self.check_list = []
 		user, items = feed_dict['user_id'], feed_dict['item_id']
 		u_embed, i_embed = self.encoder(user, items)
@@ -97,6 +98,7 @@ class LightGCNImpression(ImpressionModel, LightGCNBase):
 
 	@staticmethod
 	def parse_model_args(parser):
+
 		parser = LightGCNBase.parse_model_args(parser)
 		return ImpressionModel.parse_model_args(parser)
 
