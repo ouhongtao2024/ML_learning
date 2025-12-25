@@ -1,76 +1,3 @@
-# # models/StagewiseGCN.py
-# from typing import Dict, Any, Tuple, Optional, List
-# import torch
-# import torch.nn as nn
-# import torch.nn.functional as F
-# from models.BaseModel import GeneralModel
-# from helpers import StagewiseGCNReader
-# import argparse
-
-# class StagewiseGCN(GeneralModel):
-#     """多阶段图卷积网络模型"""
-    
-#     reader = 'StagewiseGCNReader'
-#     runner = 'StagewiseGCNRunner'
-#     extra_log_args = ['emb_size', 'n_stages', 'n_layers', 'stage_fusion']
-    
-#     @staticmethod
-#     def parse_model_args(parser:argparse.ArgumentParser) -> argparse.ArgumentParser:
-#         # TODO: 需要调用GeneralModel.parse_model_args，添加阶段GCN特有参数
-#         pass
-    
-#     def __init__(self, args, corpus: StagewiseGCNReader):
-#         super().__init__(args, corpus)
-#         # TODO: 初始化模型参数和预计算邻接矩阵
-#         # 需要：从corpus获取预计算的邻接矩阵并转换为稀疏张量
-#         # 需要：参考LightGCN的_convert_sp_mat_to_sp_tensor方法
-#         pass
-    
-#     def _define_params(self) -> None:
-#         """定义模型参数"""
-#         # TODO: 定义用户/物品嵌入层（参考LightGCN的embedding_dict）
-#         # TODO: 定义阶段特定的图卷积层（参考LGCNEncoder）
-#         # TODO: 可选：阶段融合模块（attention/weighted/concat）
-#         pass
-    
-#     def _prepare_adjacency_matrices(self) -> List[torch.Tensor]:
-#         """准备邻接矩阵张量"""
-#         # TODO: 将预计算的稀疏邻接矩阵转换为PyTorch稀疏张量
-#         # 需要：corpus.get_stage_adjacency(stage)获取sp.csr_matrix
-#         # 需要：LGCNEncoder._convert_sp_mat_to_sp_tensor转换
-#         pass
-    
-#     def _stagewise_propagation(self, 
-#                               embeddings: torch.Tensor,
-#                               stage: int) -> torch.Tensor:
-#         """执行指定阶段的图传播"""
-#         # TODO: 实现LightGCN风格的图传播
-#         # 需要：使用torch.sparse.mm进行稀疏矩阵乘法
-#         # 需要：参考LGCNEncoder.forward中的传播逻辑
-#         pass
-    
-#     def forward(self, feed_dict: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
-#         """前向传播"""
-#         # TODO: 实现多阶段图卷积和特征融合
-#         # 需要：根据self.stage 选择邻接矩阵
-#         # 需要：多阶段传播 -> 阶段融合 -> 计算预测分数
-#         pass
-    
-    
-#     class Dataset(GeneralModel.Dataset):
-#         """StagewiseGCN专用数据集类"""
-        
-#         def __init__(self, model: 'StagewiseGCN', corpus: StagewiseGCNReader, phase: str):
-#             super().__init__(model, corpus, phase)
-#             # TODO: 初始化阶段数据
-#             pass
-        
-#         def _get_feed_dict(self, index: int) -> Dict[str, Any]:
-#             # TODO: 扩展基类feed_dict，添加阶段信息
-#             # 需要：参考GeneralModel.Dataset._get_feed_dict
-#             pass
-
-
 # models/StagewiseGCF.py
 from typing import Dict, Any, Tuple, Optional, List
 import torch
@@ -83,7 +10,7 @@ import scipy.sparse as sp
 import numpy as np
 import logging
 
-class LightGCNBase(object):
+class _LightGCNBase(object):
 	@staticmethod
 	def parse_model_args(parser):
 		parser.add_argument('--emb_size', type=int, default=64,
@@ -92,39 +19,6 @@ class LightGCNBase(object):
 							help='Number of LightGCN layers.')
 		return parser
 	
-	@staticmethod
-	def build_adjmat(user_count, item_count, train_mat, selfloop_flag=False):
-		R = sp.dok_matrix((user_count, item_count), dtype=np.float32)
-		for user in train_mat:
-			for item in train_mat[user]:
-				R[user, item] = 1
-		R = R.tolil()
-
-		adj_mat = sp.dok_matrix((user_count + item_count, user_count + item_count), dtype=np.float32)
-		adj_mat = adj_mat.tolil()
-
-		adj_mat[:user_count, user_count:] = R
-		adj_mat[user_count:, :user_count] = R.T
-		adj_mat = adj_mat.todok()
-
-		def normalized_adj_single(adj):
-			# D^-1/2 * A * D^-1/2
-			rowsum = np.array(adj.sum(1)) + 1e-10
-
-			d_inv_sqrt = np.power(rowsum, -0.5).flatten()
-			d_inv_sqrt[np.isinf(d_inv_sqrt)] = 0.
-			d_mat_inv_sqrt = sp.diags(d_inv_sqrt)
-
-			bi_lap = d_mat_inv_sqrt.dot(adj).dot(d_mat_inv_sqrt)
-			return bi_lap.tocoo()
-
-		if selfloop_flag:
-			norm_adj_mat = normalized_adj_single(adj_mat + sp.eye(adj_mat.shape[0]))
-		else:
-			norm_adj_mat = normalized_adj_single(adj_mat)
-
-		return norm_adj_mat.tocsr()
-
 	def _base_init(self, args : argparse.Namespace, corpus ):
 		self.emb_size = args.emb_size
 		self.n_layers = args.n_layers
@@ -133,7 +27,7 @@ class LightGCNBase(object):
 		self.apply(self.init_weights)
 	
 	def _base_define_params(self):	
-		self.encoder = LGCNEncoder(self.user_num, self.item_num, self.emb_size, self.norm_adj, self.n_layers)
+		self.encoder = _LGCNEncoder(self.user_num, self.item_num, self.emb_size, self.norm_adj, self.n_layers)
 
 	def forward(self, feed_dict : dict[str,any]):
 		self.check_list = []
@@ -145,7 +39,7 @@ class LightGCNBase(object):
 		i_v = i_embed
 		return {'prediction': prediction.view(feed_dict['batch_size'], -1), 'u_v': u_v, 'i_v':i_v}
 
-class StagewiseBase(LightGCNBase):
+class StagewiseBase(_LightGCNBase):
     def _base_init(self, args: argparse.Namespace, corpus):
         """
         重载父类初始化，支持多阶段训练。
@@ -170,66 +64,87 @@ class StagewiseBase(LightGCNBase):
         可以根据业务逻辑生成多个相似矩阵
         """
         logging.info("[StagewiseBase] Preparing stage-wise normalized adjacency matrices")
-
+        print(self.corpus)
         # 示例：三阶段，每阶段可以加入不同的归一化策略
-        for stage in range(self.stages):
+        for stage in range(1,self.stages+1):
             # 动态生成归一化矩阵，可以调整 selfloop_flag 或其他参数
             norm_adj = self.build_adjmat(
                 self.corpus.n_users,
                 self.corpus.n_items,
                 self.corpus.train_clicked_set,
                 d1=-0.5,
-                d2=-0.5 + (self.stages - stage - 1) * self.c,
+                d2=-0.5 + (self.stages - stage) * self.c,
                 selfloop_flag=True  # 可以根据 stage 动态调整
             )
             self.stage_norm_adj[stage] = norm_adj
             logging.info(f"[StagewiseBase] Stage {stage} normalized adjacency matrix shape: {norm_adj.shape}, nnz: {norm_adj.nnz}")
 
-    def build_adjmat(self, user_count: int, item_count: int,
-                     train_mat: dict, d1: float = -0.5, d2: float = -0.5, 
-                     selfloop_flag: bool = True) -> sp.csr_matrix:
+    @staticmethod
+    def build_adjmat(user_count: int, item_count: int,
+                    train_mat: Dict[int, list],
+                    d1: float = -0.5, d2: float = -0.5,
+                    selfloop_flag: bool = True) -> sp.csr_matrix:
         """
-        构建归一化邻接矩阵（适用于多阶段可控）
-        
+        内存友好型邻接矩阵构建
+
         :param user_count: 用户数量
         :param item_count: 物品数量
-        :param train_mat: 用户->物品字典
-        :param d1: 左侧归一化指数（可阶段化）
-        :param d2: 右侧归一化指数（可阶段化）
+        :param train_mat: {user: [item,...]}
+        :param d1: 左侧归一化指数
+        :param d2: 右侧归一化指数
         :param selfloop_flag: 是否加自环
-        :return: 归一化后的 CSR 矩阵
+        :return: 对称归一化 csr_matrix
         """
-        # 构造原始评分矩阵 R
-        R = sp.dok_matrix((user_count, item_count), dtype=np.float32)
-        for u, items in train_mat.items():
-            for i in items:
-                R[u, i] = 1.
-        R = R.tolil()
+        n_nodes = user_count + item_count
 
-        # 构造完整邻接矩阵
-        adj_mat = sp.dok_matrix((user_count + item_count, user_count + item_count), dtype=np.float32)
-        adj_mat[:user_count, user_count:] = R
-        adj_mat[user_count:, :user_count] = R.T
-        adj_mat = adj_mat.tolil()
+        # 收集三元组
+        row = []
+        col = []
+        data = []
+
+        for u, items in train_mat.items():
+            row.extend([u] * len(items))
+            col.extend([user_count + i for i in items])
+            data.extend([1.0] * len(items))
+
+        # 双向边
+        row_b = col.copy()
+        col_b = row.copy()
+        data_b = data.copy()
+
+        row.extend(row_b)
+        col.extend(col_b)
+        data.extend(data_b)
 
         if selfloop_flag:
-            adj_mat = adj_mat + sp.eye(user_count + item_count)
+            row.extend(range(n_nodes))
+            col.extend(range(n_nodes))
+            data.extend([1.0] * n_nodes)
+
+        # 转 numpy
+        row = np.array(row, dtype=np.int32)
+        col = np.array(col, dtype=np.int32)
+        data = np.array(data, dtype=np.float32)
+
+        # 构建 COO
+        adj = sp.coo_matrix((data, (row, col)), shape=(n_nodes, n_nodes), dtype=np.float32)
 
         # 对称归一化
-        adj_mat = adj_mat.tocoo()
-        rowsum = np.array(adj_mat.sum(1)).flatten()
+        rowsum = np.array(adj.sum(axis=1)).flatten()
         d_inv_sqrt = np.power(rowsum, d1)
         d_inv_sqrt[np.isinf(d_inv_sqrt)] = 0.
-        d_mat_inv_sqrt = sp.diags(d_inv_sqrt)
+        D1 = sp.diags(d_inv_sqrt)
 
         d_inv_sqrt_last = np.power(rowsum, d2)
         d_inv_sqrt_last[np.isinf(d_inv_sqrt_last)] = 0.
-        d_mat_inv_sqrt_last = sp.diags(d_inv_sqrt_last)
+        D2 = sp.diags(d_inv_sqrt_last)
 
-        norm_adj = adj_mat.dot(d_mat_inv_sqrt).transpose().dot(d_mat_inv_sqrt_last).tocoo()
-        return norm_adj.tocsr()
+        norm_adj = D1.dot(adj).dot(D2).tocsr()
+        return norm_adj
+
 
     def set_stage(self, stage: int):
+		# 写了，但是暂时还没有任何地方用到
         """
         切换训练阶段
         """
@@ -247,7 +162,7 @@ class StagewiseBase(LightGCNBase):
         """
         norm_adj = self.stage_norm_adj.get(self.current_stage)
         logging.info(f"[StagewiseBase] Defining encoder with stage {self.current_stage} norm_adj")
-        self.encoder = LGCNEncoder(
+        self.encoder = _LGCNEncoder(
             self.corpus.n_users,
             self.corpus.n_items,
             self.emb_size,
@@ -299,9 +214,9 @@ class StagewiseGCN(StagewiseBase,GeneralModel):
         out_dict = StagewiseBase.forward(self, feed_dict)
         return {'prediction': out_dict['prediction']}
             
-class LGCNEncoder(nn.Module):
+class _LGCNEncoder(nn.Module):
 	def __init__(self, user_count, item_count, emb_size, norm_adj, n_layers = 3):
-		super(LGCNEncoder, self).__init__()
+		super(_LGCNEncoder, self).__init__()
 		self.user_count = user_count
 		self.item_count = item_count
 		self.emb_size = emb_size
@@ -324,11 +239,21 @@ class LGCNEncoder(nn.Module):
 		self.sparse_norm_adj = self._convert_sp_mat_to_sp_tensor(self.norm_adj).cuda()
 
 	@staticmethod
-	def _convert_sp_mat_to_sp_tensor(X):
-		coo = X.tocoo()
-		i = torch.LongTensor([coo.row, coo.col])
-		v = torch.from_numpy(coo.data).float()
-		return torch.sparse.FloatTensor(i, v, coo.shape)
+	def _convert_sp_mat_to_sp_tensor(X: sp.csr_matrix, device: torch.device = torch.device('cuda')) -> torch.sparse.FloatTensor:
+		"""
+		内存友好型 CSR/COO -> Torch Sparse Tensor
+		"""
+		if not sp.isspmatrix_coo(X):
+			X = X.tocoo()
+
+		# 直接用 numpy 堆叠，避免 Python list
+		indices = np.vstack((X.row, X.col)).astype(np.int64)  # shape [2, nnz]
+		values = X.data.astype(np.float32)                     # shape [nnz]
+
+		# 转为 Torch Tensor
+		i = torch.from_numpy(indices)
+		v = torch.from_numpy(values)
+		return torch.sparse_coo_tensor(i, v, X.shape, device=device)
 
 	def forward(self, users, items):
 		ego_embeddings = torch.cat([self.embedding_dict['user_emb'], self.embedding_dict['item_emb']], 0)
@@ -348,3 +273,4 @@ class LGCNEncoder(nn.Module):
 		item_embeddings = item_all_embeddings[items, :]
 
 		return user_embeddings, item_embeddings
+      

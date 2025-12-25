@@ -8,6 +8,7 @@ import torch.nn as nn
 import scipy.sparse as sp
 import argparse
 import helpers.BaseReader
+from typing import Dict
 from models.BaseModel import GeneralModel
 from models.BaseImpressionModel import ImpressionModel
 
@@ -21,37 +22,67 @@ class LightGCNBase(object):
 		return parser
 	
 	@staticmethod
-	def build_adjmat(user_count, item_count, train_mat, selfloop_flag=False):
-		R = sp.dok_matrix((user_count, item_count), dtype=np.float32)
-		for user in train_mat:
-			for item in train_mat[user]:
-				R[user, item] = 1
-		R = R.tolil()
+	def build_adjmat(user_count: int, item_count: int,
+					train_mat: Dict[int, list],
+					d1: float = -0.5, d2: float = -0.5,
+					selfloop_flag: bool = True) -> sp.csr_matrix:
+		"""
+		内存友好型邻接矩阵构建
 
-		adj_mat = sp.dok_matrix((user_count + item_count, user_count + item_count), dtype=np.float32)
-		adj_mat = adj_mat.tolil()
+		:param user_count: 用户数量
+		:param item_count: 物品数量
+		:param train_mat: {user: [item,...]}
+		:param d1: 左侧归一化指数
+		:param d2: 右侧归一化指数
+		:param selfloop_flag: 是否加自环
+		:return: 对称归一化 csr_matrix
+		"""
+		n_nodes = user_count + item_count
 
-		adj_mat[:user_count, user_count:] = R
-		adj_mat[user_count:, :user_count] = R.T
-		adj_mat = adj_mat.todok()
+		# 收集三元组
+		row = []
+		col = []
+		data = []
 
-		def normalized_adj_single(adj):
-			# D^-1/2 * A * D^-1/2
-			rowsum = np.array(adj.sum(1)) + 1e-10
+		for u, items in train_mat.items():
+			row.extend([u] * len(items))
+			col.extend([user_count + i for i in items])
+			data.extend([1.0] * len(items))
 
-			d_inv_sqrt = np.power(rowsum, -0.5).flatten()
-			d_inv_sqrt[np.isinf(d_inv_sqrt)] = 0.
-			d_mat_inv_sqrt = sp.diags(d_inv_sqrt)
+		# 双向边
+		row_b = col.copy()
+		col_b = row.copy()
+		data_b = data.copy()
 
-			bi_lap = d_mat_inv_sqrt.dot(adj).dot(d_mat_inv_sqrt)
-			return bi_lap.tocoo()
+		row.extend(row_b)
+		col.extend(col_b)
+		data.extend(data_b)
 
 		if selfloop_flag:
-			norm_adj_mat = normalized_adj_single(adj_mat + sp.eye(adj_mat.shape[0]))
-		else:
-			norm_adj_mat = normalized_adj_single(adj_mat)
+			row.extend(range(n_nodes))
+			col.extend(range(n_nodes))
+			data.extend([1.0] * n_nodes)
 
-		return norm_adj_mat.tocsr()
+		# 转 numpy
+		row = np.array(row, dtype=np.int32)
+		col = np.array(col, dtype=np.int32)
+		data = np.array(data, dtype=np.float32)
+
+		# 构建 COO
+		adj = sp.coo_matrix((data, (row, col)), shape=(n_nodes, n_nodes), dtype=np.float32)
+
+		# 对称归一化
+		rowsum = np.array(adj.sum(axis=1)).flatten()
+		d_inv_sqrt = np.power(rowsum, d1)
+		d_inv_sqrt[np.isinf(d_inv_sqrt)] = 0.
+		D1 = sp.diags(d_inv_sqrt)
+
+		d_inv_sqrt_last = np.power(rowsum, d2)
+		d_inv_sqrt_last[np.isinf(d_inv_sqrt_last)] = 0.
+		D2 = sp.diags(d_inv_sqrt_last)
+
+		norm_adj = D1.dot(adj).dot(D2).tocsr()
+		return norm_adj
 
 	def _base_init(self, args : argparse.Namespace, corpus : helpers.BaseReader.BaseReader):
 		self.emb_size = args.emb_size
@@ -128,13 +159,23 @@ class LGCNEncoder(nn.Module):
 			'item_emb': nn.Parameter(initializer(torch.empty(self.item_count, self.emb_size))),
 		})
 		return embedding_dict
-
+	
 	@staticmethod
-	def _convert_sp_mat_to_sp_tensor(X):
-		coo = X.tocoo()
-		i = torch.LongTensor([coo.row, coo.col])
-		v = torch.from_numpy(coo.data).float()
-		return torch.sparse.FloatTensor(i, v, coo.shape)
+	def _convert_sp_mat_to_sp_tensor(X: sp.csr_matrix, device: torch.device = torch.device('cuda')) -> torch.sparse.FloatTensor:
+		"""
+		内存友好型 CSR/COO -> Torch Sparse Tensor
+		"""
+		if not sp.isspmatrix_coo(X):
+			X = X.tocoo()
+
+		# 直接用 numpy 堆叠，避免 Python list
+		indices = np.vstack((X.row, X.col)).astype(np.int64)  # shape [2, nnz]
+		values = X.data.astype(np.float32)                     # shape [nnz]
+
+		# 转为 Torch Tensor
+		i = torch.from_numpy(indices)
+		v = torch.from_numpy(values)
+		return torch.sparse_coo_tensor(i, v, X.shape, device=device)
 
 	def forward(self, users, items):
 		ego_embeddings = torch.cat([self.embedding_dict['user_emb'], self.embedding_dict['item_emb']], 0)
