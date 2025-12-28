@@ -60,6 +60,7 @@ class StagewiseBase(_LightGCNBase):
         self.even_layer = args.even_layer
         self.l2 = args.l2
 
+		self.Forward_fn : Dict[int,Any] = {1:self._forward1,2:self._foward2,3:self._foward3}
         
         logging.info(f"[StagewiseBase] Initializing model with emb_size={self.emb_size}, n_layers={self.n_layers}")
         self._prepare_stage_norm_adjs()
@@ -173,8 +174,11 @@ class StagewiseBase(_LightGCNBase):
             self.stage_norm_adj,
             self.n_layers
         )
+        
+    def forward(self, feed_dict):
+        return self.Forward_fn[self.current_stage](feed_dict)
 
-    def forward(self, feed_dict: Dict[str, Any]):
+    def _forward1(self, feed_dict: Dict[str, Any]):
         """
         重载 forward 支持多阶段训练，可记录每阶段 embedding
         """
@@ -201,10 +205,12 @@ class StagewiseBase(_LightGCNBase):
     
     def _foward2(self, feed_dict: Dict[str, Any]):
         """
-        重载 forward 支持第二阶段的训练，可记录每阶段 embedding
+        重载 forward 支持第二阶段的训练，可记录每阶段 embedding ,使用两个阶段的归一化矩阵
         """
+        
         # logging.info(f"[StagewiseBase] Forward pass at stage {self.current_stage}")
         user, items = feed_dict['user_id'], feed_dict['item_id']
+        # TODO 差了一个阶段
         odd_u_embed, odd_i_embed = self.encoder(user, items,self.odd_layer, 2)
         even_u_embed, even_i_embed = self.encoder(user, items,self.even_layer, 2)
 
@@ -223,8 +229,15 @@ class StagewiseBase(_LightGCNBase):
 			'even_user_emb': even_u_embed,
 			'even_item_emb': even_i_embed
         }
+    def _foward3(self, feed_dict: Dict[str, Any]):
+        """
+        重载 forward 支持第三阶段的训练，可记录每阶段 embedding ,使用三个阶段的归一化矩阵
+        """
+        # TODO 需要补充两个东西进去
+        pass
 
 class StagewiseGCN(StagewiseBase,GeneralModel):
+    
     """多阶段图卷积网络模型"""
     
     reader = 'BaseReader'
