@@ -32,7 +32,7 @@ class _LightGCNBase(object):
 		self.apply(self.init_weights)
 	
 	def _base_define_params(self):	
-		self.encoder = _LGCNEncoder(self.user_num, self.item_num, self.emb_size, self.norm_adj, self.n_layers)
+		self.encoder = _LGCNEncoder(self.user_num, self.item_num, self.emb_size, self.norm_adj, self.n_layers,self)
 
 	def forward(self, feed_dict : dict[str,any]):
 		self.check_list = []
@@ -51,7 +51,7 @@ class StagewiseBase(_LightGCNBase):
         self.emb_size = args.emb_size
         self.n_layers = args.n_layers
         self.current_stage = 1  # 默认阶段1
-        self.stage_norm_adj = {}  # 存储各阶段归一化矩阵
+        self.stage_norm_adj : dict[int,sp.csr_matrix] = {}  # 存储各阶段归一化矩阵
         self.corpus = corpus
         self.stages = args.n_stages
         self.current_norm_adj = None
@@ -59,6 +59,7 @@ class StagewiseBase(_LightGCNBase):
         self.odd_layer = args.odd_layer
         self.even_layer = args.even_layer
         self.l2 = args.l2
+
         
         logging.info(f"[StagewiseBase] Initializing model with emb_size={self.emb_size}, n_layers={self.n_layers}")
         self._prepare_stage_norm_adjs()
@@ -72,9 +73,9 @@ class StagewiseBase(_LightGCNBase):
         """
         logging.info("[StagewiseBase] Preparing stage-wise normalized adjacency matrices")
         print(self.corpus)
-        # 示例：三阶段，每阶段可以加入不同的归一化策略
+        
         for stage in range(1,self.stages+1):
-            # 动态生成归一化矩阵，可以调整 selfloop_flag 或其他参数
+            
             norm_adj = self.build_adjmat(
                 self.corpus.n_users,
                 self.corpus.n_items,
@@ -156,23 +157,20 @@ class StagewiseBase(_LightGCNBase):
         """
         if stage not in self.stage_norm_adj:
             raise ValueError(f"Invalid stage {stage}, available stages: {list(self.stage_norm_adj.keys())}")
-        
         self.current_stage = stage
-        self.encoder._stage_change(self.stage_norm_adj[stage])
         # 按照阶段修改当前的编码器所使用的归一化矩阵
         logging.info(f"[StagewiseBase] Switched to stage {stage}")
 
     def _base_define_params(self):
         """
-        定义编码器，按当前阶段使用对应邻接矩阵
+        定义编码器，传入所有阶段的邻接矩阵
         """
-        norm_adj = self.stage_norm_adj.get(self.current_stage)
         logging.info(f"[StagewiseBase] Defining encoder with stage {self.current_stage} norm_adj")
         self.encoder = _LGCNEncoder(
             self.corpus.n_users,
             self.corpus.n_items,
             self.emb_size,
-            norm_adj,
+            self.stage_norm_adj,
             self.n_layers
         )
 
@@ -200,7 +198,31 @@ class StagewiseBase(_LightGCNBase):
 			'even_user_emb': even_u_embed,
 			'even_item_emb': even_i_embed
         }
+    
+    def _foward2(self, feed_dict: Dict[str, Any]):
+        """
+        重载 forward 支持第二阶段的训练，可记录每阶段 embedding
+        """
+        # logging.info(f"[StagewiseBase] Forward pass at stage {self.current_stage}")
+        user, items = feed_dict['user_id'], feed_dict['item_id']
+        odd_u_embed, odd_i_embed = self.encoder(user, items,self.odd_layer, 2)
+        even_u_embed, even_i_embed = self.encoder(user, items,self.even_layer, 2)
 
+        odd_score = (odd_u_embed[:, None, :] * odd_i_embed).sum(dim=-1)  # [batch_size, n_items]
+        even_score = (even_u_embed[:, None, :] * even_i_embed).sum(dim=-1)  # [batch_size, n_items]
+
+        prediction = odd_score + even_score
+
+        # logging.debug(f"[StagewiseBase] Prediction shape: {prediction.shape}")
+        return {
+            'prediction': prediction.view(feed_dict['batch_size'], -1),
+            'odd_score': odd_score,
+            'even_score': even_score,
+            'odd_user_emb': odd_u_embed,
+			'odd_item_emb': odd_i_embed,
+			'even_user_emb': even_u_embed,
+			'even_item_emb': even_i_embed
+        }
 
 class StagewiseGCN(StagewiseBase,GeneralModel):
     """多阶段图卷积网络模型"""
@@ -223,8 +245,9 @@ class StagewiseGCN(StagewiseBase,GeneralModel):
         self._base_init(args, corpus)
 
     def forward(self, feed_dict):
-        out_dict = StagewiseBase.forward(self, feed_dict)
-        return {'prediction': out_dict['prediction']}
+        # 按道理来说，前向传播应该仅仅回传预测结果，但是这里为了适配架构和后面的损失函数计算，因此整个字典返回了
+        return StagewiseBase.forward(self, feed_dict)
+        
         
     def loss(self, out_dict: dict) -> torch.Tensor:
         """分开计算偶数层和奇数层的误差，并加上正则化项"""
@@ -253,16 +276,20 @@ class StagewiseGCN(StagewiseBase,GeneralModel):
         return odd_loss + even_loss + self.l2 * reg_loss  
               
 class _LGCNEncoder(nn.Module):
-	def __init__(self, user_count, item_count, emb_size, norm_adj, n_layers = 3):
+	def __init__(self, user_count, item_count, emb_size, stage_orm_adjs : Dict[int,sp.csr_matrix], n_layers = 3, n_stages = 3):
 		super(_LGCNEncoder, self).__init__()
 		self.user_count = user_count
 		self.item_count = item_count
 		self.emb_size = emb_size
 		self.layers = [emb_size] * n_layers
-		self.norm_adj = norm_adj
+		self.stage_norm_adj = stage_orm_adjs
+		self.n_stages = n_stages
 
 		self.embedding_dict = self._init_model()
-		self.sparse_norm_adj = self._convert_sp_mat_to_sp_tensor(self.norm_adj).cuda()
+		self.sparse_norm_adjs : Dict[int,torch.sparse.FloatTensor] = {}
+		for stage in range(1, self.n_stages + 1):
+			self.sparse_norm_adjs[stage] = self._convert_sp_mat_to_sp_tensor(self.stage_norm_adj[stage]).cuda()
+		
 
 	def _init_model(self):
 		initializer = nn.init.xavier_uniform_
@@ -271,10 +298,6 @@ class _LGCNEncoder(nn.Module):
 			'item_emb': nn.Parameter(initializer(torch.empty(self.item_count, self.emb_size))),
 		})
 		return embedding_dict
-    
-	def _stage_change(self,norm_adj : sp.csr_matrix):
-		self.norm_adj = norm_adj
-		self.sparse_norm_adj = self._convert_sp_mat_to_sp_tensor(self.norm_adj).cuda()
 
 	@staticmethod
 	def _convert_sp_mat_to_sp_tensor(X: sp.csr_matrix, device: torch.device = torch.device('cuda')) -> torch.sparse.FloatTensor:
@@ -293,9 +316,9 @@ class _LGCNEncoder(nn.Module):
 		v = torch.from_numpy(values)
 		return torch.sparse_coo_tensor(i, v, X.shape, device=device)
 
-	def forward(self, users, items,n_layers : int = 3) -> Tuple[torch.Tensor, torch.Tensor]:
+	def forward(self, users, items,n_layers : int = 3 ,stage : int = 1) -> Tuple[torch.Tensor, torch.Tensor]:
 		"""
-        按照层数进行高阶连接信息整合，并返回对应的用户和商品的编码向量
+        按照层数和阶段数进行高阶连接信息整合，并返回对应的用户和商品的编码向量
 		"""
 		ego_embeddings = torch.cat(
                   [self.embedding_dict['user_emb'], 
@@ -303,7 +326,7 @@ class _LGCNEncoder(nn.Module):
                    dim=0)
 
 		for _ in range(n_layers):
-			ego_embeddings = torch.sparse.mm(self.sparse_norm_adj, ego_embeddings)
+			ego_embeddings = torch.sparse.mm(self.sparse_norm_adjs[stage], ego_embeddings)
                   
 
 		user_all_embeddings = ego_embeddings[:self.user_count, :]
