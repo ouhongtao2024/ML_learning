@@ -269,17 +269,17 @@ class StagewiseGCN(StagewiseBase,GeneralModel):
             # odd
             pos_odd = odd_score[:, 0]
             neg_odd = odd_score[:, 1:]
-            odd_loss = F.softplus(neg_odd - pos_odd).sum(dim=1).mean()
+            odd_loss = F.softplus(neg_odd - pos_odd).mean()
 
             # even
             pos_even = even_score[:, 0]
             neg_even = even_score[:, 1:]
-            even_loss = F.softplus(neg_even - pos_even).sum(dim=1).mean()
+            even_loss = F.softplus(neg_even - pos_even).mean()
 
             stage_losses += odd_loss + even_loss
 
         # 默认：所有 stage 等权
-        ranking_loss = stage_losses.mean()
+        
 
         # -------- Stage-wise L2 regularization --------
         reg_loss = 0.0
@@ -298,7 +298,7 @@ class StagewiseGCN(StagewiseBase,GeneralModel):
         # if reg_cnt > 0:
         #     reg_loss = reg_loss / reg_cnt
 
-        return ranking_loss + self.l2 * reg_loss
+        return stage_losses + self.l2 * reg_loss
               
 class _LGCNEncoder(nn.Module):
     def __init__(self, user_count, item_count, emb_size, stage_orm_adjs : Dict[int,sp.csr_matrix], n_layers = 3, n_stages = 3):
