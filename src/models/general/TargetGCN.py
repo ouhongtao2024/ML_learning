@@ -28,6 +28,7 @@ class _LightGCNBase(object):
         parser.add_argument(
             "--even_layer", type=int, default=2, help="selected even layer."
         )
+        parser.add_argument("--c", type=float, default=0.1, help="c value")
 
         return parser
 
@@ -76,7 +77,7 @@ class TargetBase(_LightGCNBase):
         self.corpus = corpus
         self.stages = args.n_stages
         self.current_norm_adj = None
-        self.c = 0.1
+        self.c = args.c
         self.odd_layer = args.odd_layer
         self.even_layer = args.even_layer
         self.l2 = args.l2
@@ -274,7 +275,7 @@ class TargetGCN(TargetBase, GeneralModel):
 
     reader = "BaseReader"
     runner = "StagewiseRunner"
-    extra_log_args = ["n_stages"]
+    extra_log_args = ["n_stages", "c", "odd_layer", "even_layer"]
 
     @staticmethod
     def parse_model_args(parser) -> argparse.ArgumentParser:
