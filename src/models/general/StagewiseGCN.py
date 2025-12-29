@@ -231,7 +231,7 @@ class StagewiseGCN(StagewiseBase,GeneralModel):
     """多阶段图卷积网络模型"""
     
     reader = 'BaseReader'
-    runner = 'BaseRunner'
+    runner = 'StagewiseRunner'
     extra_log_args = ['n_stages']
     
     @staticmethod
