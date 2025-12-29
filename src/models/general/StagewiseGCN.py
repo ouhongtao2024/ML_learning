@@ -11,37 +11,37 @@ import numpy as np
 import logging
 
 class _LightGCNBase(object):
-	@staticmethod
-	def parse_model_args(parser):
-		parser.add_argument('--emb_size', type=int, default=64,
-							help='Size of embedding vectors.')
-		parser.add_argument('--n_layers', type=int, default=3,
-							help='Number of LightGCN layers.')
-		parser.add_argument('--odd_layer', type=int, default=3,
-							help='selected odd layer.')
-		parser.add_argument('--even_layer', type=int, default=2,
-							help='selected even layer.') 
+    @staticmethod
+    def parse_model_args(parser):
+        parser.add_argument('--emb_size', type=int, default=64,
+                            help='Size of embedding vectors.')
+        parser.add_argument('--n_layers', type=int, default=3,
+                            help='Number of LightGCN layers.')
+        parser.add_argument('--odd_layer', type=int, default=3,
+                            help='selected odd layer.')
+        parser.add_argument('--even_layer', type=int, default=2,
+                            help='selected even layer.') 
         
-		return parser
-	
-	def _base_init(self, args : argparse.Namespace, corpus):
-		self.emb_size = args.emb_size
-		self.n_layers = args.n_layers
-		self.norm_adj = self.build_adjmat(corpus.n_users, corpus.n_items, corpus.train_clicked_set)
-		self._base_define_params()
-		self.apply(self.init_weights)
-	
-	def _base_define_params(self):	
-		self.encoder = _LGCNEncoder(self.user_num, self.item_num, self.emb_size, self.norm_adj, self.n_layers,self)
+        return parser
+    
+    def _base_init(self, args : argparse.Namespace, corpus):
+        self.emb_size = args.emb_size
+        self.n_layers = args.n_layers
+        self.norm_adj = self.build_adjmat(corpus.n_users, corpus.n_items, corpus.train_clicked_set)
+        self._base_define_params()
+        self.apply(self.init_weights)
+    
+    def _base_define_params(self):    
+        self.encoder = _LGCNEncoder(self.user_num, self.item_num, self.emb_size, self.norm_adj, self.n_layers,self)
 
-	def forward(self, feed_dict : dict[str,any]):
-		self.check_list = []
-		user, items = feed_dict['user_id'], feed_dict['item_id']
-		u_embed, i_embed = self.encoder(user, items)
-		prediction = (u_embed[:, None, :] * i_embed).sum(dim=-1)  # [batch_size, -1]
-		u_v = u_embed.repeat(1,items.shape[1]).view(items.shape[0],items.shape[1],-1)
-		i_v = i_embed
-		return {'prediction': prediction.view(feed_dict['batch_size'], -1), 'u_v': u_v, 'i_v':i_v}
+    def forward(self, feed_dict : dict[str,any]):
+        self.check_list = []
+        user, items = feed_dict['user_id'], feed_dict['item_id']
+        u_embed, i_embed = self.encoder(user, items)
+        prediction = (u_embed[:, None, :] * i_embed).sum(dim=-1)  # [batch_size, -1]
+        u_v = u_embed.repeat(1,items.shape[1]).view(items.shape[0],items.shape[1],-1)
+        i_v = i_embed
+        return {'prediction': prediction.view(feed_dict['batch_size'], -1), 'u_v': u_v, 'i_v':i_v}
 
 class StagewiseBase(_LightGCNBase):
     def _base_init(self, args: argparse.Namespace, corpus):
@@ -59,8 +59,6 @@ class StagewiseBase(_LightGCNBase):
         self.odd_layer = args.odd_layer
         self.even_layer = args.even_layer
         self.l2 = args.l2
-
-		self.Forward_fn : Dict[int,Any] = {1:self._forward1,2:self._foward2,3:self._foward3}
         
         logging.info(f"[StagewiseBase] Initializing model with emb_size={self.emb_size}, n_layers={self.n_layers}")
         self._prepare_stage_norm_adjs()
@@ -176,65 +174,57 @@ class StagewiseBase(_LightGCNBase):
         )
         
     def forward(self, feed_dict):
-        return self.Forward_fn[self.current_stage](feed_dict)
+        return self._forward_stagewise(feed_dict, self.current_stage)
 
-    def _forward1(self, feed_dict: Dict[str, Any]):
+    def _forward_stagewise(
+        self,
+        feed_dict: Dict[str, Any],
+        num_stages: int
+    ) -> Dict[str, Any]:
         """
-        重载 forward 支持多阶段训练，可记录每阶段 embedding
+        通用 stage-wise forward
+        支持任意阶段数的训练与 embedding 记录
         """
-        # logging.info(f"[StagewiseBase] Forward pass at stage {self.current_stage}")
         user, items = feed_dict['user_id'], feed_dict['item_id']
-        odd_u_embed, odd_i_embed = self.encoder(user, items,self.odd_layer)
-        even_u_embed, even_i_embed = self.encoder(user, items,self.even_layer)
 
-        odd_score = (odd_u_embed[:, None, :] * odd_i_embed).sum(dim=-1)  # [batch_size, n_items]
-        even_score = (even_u_embed[:, None, :] * even_i_embed).sum(dim=-1)  # [batch_size, n_items]
+        odd_user_embs: List[torch.Tensor] = []
+        odd_item_embs: List[torch.Tensor] = []
+        even_user_embs: List[torch.Tensor] = []
+        even_item_embs: List[torch.Tensor] = []
+        odd_score_list: List[torch.Tensor] = []
+        even_score_list: List[torch.Tensor] = []
 
-        prediction = odd_score + even_score
 
-        # logging.debug(f"[StagewiseBase] Prediction shape: {prediction.shape}")
+        for stage in range(1, num_stages + 1):
+            odd_u, odd_i = self.encoder(user, items, self.odd_layer, stage)
+            even_u, even_i = self.encoder(user, items, self.even_layer, stage)
+
+            odd_user_embs.append(odd_u)
+            odd_item_embs.append(odd_i)
+            even_user_embs.append(even_u)
+            even_item_embs.append(even_i)
+
+            stage_odd_score = (odd_u[:, None, :] * odd_i).sum(dim=-1)
+            stage_even_score = (even_u[:, None, :] * even_i).sum(dim=-1)
+
+            if odd_score_list is None:
+                odd_score_list = [stage_odd_score]
+                even_score_list = [stage_even_score]
+            else:
+                odd_score_list.append(stage_odd_score)
+                even_score_list.append(stage_even_score)
+
+        prediction = sum(odd_score_list) + sum(even_score_list)
+
         return {
             'prediction': prediction.view(feed_dict['batch_size'], -1),
-            'odd_score': odd_score,
-            'even_score': even_score,
-            'odd_user_emb': odd_u_embed,
-			'odd_item_emb': odd_i_embed,
-			'even_user_emb': even_u_embed,
-			'even_item_emb': even_i_embed
+            'odd_score_list': odd_score_list,
+            'even_score_list': even_score_list,
+            'odd_user_emb_list': odd_user_embs,
+            'odd_item_emb_list': odd_item_embs,
+            'even_user_emb_list': even_user_embs,
+            'even_item_emb_list': even_item_embs
         }
-    
-    def _foward2(self, feed_dict: Dict[str, Any]):
-        """
-        重载 forward 支持第二阶段的训练，可记录每阶段 embedding ,使用两个阶段的归一化矩阵
-        """
-        
-        # logging.info(f"[StagewiseBase] Forward pass at stage {self.current_stage}")
-        user, items = feed_dict['user_id'], feed_dict['item_id']
-        # TODO 差了一个阶段
-        odd_u_embed, odd_i_embed = self.encoder(user, items,self.odd_layer, 2)
-        even_u_embed, even_i_embed = self.encoder(user, items,self.even_layer, 2)
-
-        odd_score = (odd_u_embed[:, None, :] * odd_i_embed).sum(dim=-1)  # [batch_size, n_items]
-        even_score = (even_u_embed[:, None, :] * even_i_embed).sum(dim=-1)  # [batch_size, n_items]
-
-        prediction = odd_score + even_score
-
-        # logging.debug(f"[StagewiseBase] Prediction shape: {prediction.shape}")
-        return {
-            'prediction': prediction.view(feed_dict['batch_size'], -1),
-            'odd_score': odd_score,
-            'even_score': even_score,
-            'odd_user_emb': odd_u_embed,
-			'odd_item_emb': odd_i_embed,
-			'even_user_emb': even_u_embed,
-			'even_item_emb': even_i_embed
-        }
-    def _foward3(self, feed_dict: Dict[str, Any]):
-        """
-        重载 forward 支持第三阶段的训练，可记录每阶段 embedding ,使用三个阶段的归一化矩阵
-        """
-        # TODO 需要补充两个东西进去
-        pass
 
 class StagewiseGCN(StagewiseBase,GeneralModel):
     
@@ -261,92 +251,114 @@ class StagewiseGCN(StagewiseBase,GeneralModel):
         # 按道理来说，前向传播应该仅仅回传预测结果，但是这里为了适配架构和后面的损失函数计算，因此整个字典返回了
         return StagewiseBase.forward(self, feed_dict)
         
-        
-    def loss(self, out_dict: dict) -> torch.Tensor:
-        """分开计算偶数层和奇数层的误差，并加上正则化项"""
-        odd_score = out_dict['odd_score'] # shape : [B, neg_items + 1]
-        even_score = out_dict['even_score']
-        pos_odd_score = odd_score[:, 0]
-        neg_odd_score = odd_score[:, 1:]
-        pos_even_score = even_score[:, 0]
-        neg_even_score = even_score[:, 1:]
+    def loss(self, out_dict: Dict) -> torch.Tensor:
+        """
+        Stage-wise loss:
+        按颗粒度累加分离开的偶数层和奇数层的误差，并加上每个阶段对应的正则化项
+        - 每个 stage 单独计算 odd / even 排序损失
+        - 最终 loss 为所有 stage 的聚合
+        """
 
-        reg_loss = 0.
-        # for key in ['odd_user_emb', 'odd_item_emb', 'even_user_emb', 'even_item_emb']:
-        #       emb : torch.Tensor = out_dict[key]  # shape: [B, emb_size]
-        #       print()
-        #       print(emb.shape)
-              
-            #   reg_loss += emb.pow(2).sum(dim=1)  # shape: [B]
-        # import sys
-        # sys.exit()
-        # reg_loss = reg_loss.mean()
+        odd_score_list = out_dict['odd_score_list']    # List[[B, 1 + neg]]
+        even_score_list = out_dict['even_score_list']
 
-        odd_loss = torch.nn.functional.softplus(neg_odd_score - pos_odd_score).sum(dim=1).mean()
+        stage_losses : torch.Tensor = 0
 
-        even_loss = torch.nn.functional.softplus(neg_even_score - pos_even_score).sum(dim=1).mean()
+      
+        for odd_score, even_score in zip(odd_score_list, even_score_list):
+            # odd
+            pos_odd = odd_score[:, 0]
+            neg_odd = odd_score[:, 1:]
+            odd_loss = F.softplus(neg_odd - pos_odd).sum(dim=1).mean()
 
-        return odd_loss + even_loss + self.l2 * reg_loss  
+            # even
+            pos_even = even_score[:, 0]
+            neg_even = even_score[:, 1:]
+            even_loss = F.softplus(neg_even - pos_even).sum(dim=1).mean()
+
+            stage_losses += odd_loss + even_loss
+
+        # 默认：所有 stage 等权
+        ranking_loss = stage_losses.mean()
+
+        # -------- Stage-wise L2 regularization --------
+        reg_loss = 0.0
+        # reg_cnt = 0
+
+        # for key in [
+        #     'odd_user_emb_list',
+        #     'odd_item_emb_list',
+        #     'even_user_emb_list',
+        #     'even_item_emb_list'
+        # ]:
+        #     for emb in out_dict[key]:
+        #         reg_loss += emb.pow(2).sum(dim=1).mean()
+        #         reg_cnt += 1
+
+        # if reg_cnt > 0:
+        #     reg_loss = reg_loss / reg_cnt
+
+        return ranking_loss + self.l2 * reg_loss
               
 class _LGCNEncoder(nn.Module):
-	def __init__(self, user_count, item_count, emb_size, stage_orm_adjs : Dict[int,sp.csr_matrix], n_layers = 3, n_stages = 3):
-		super(_LGCNEncoder, self).__init__()
-		self.user_count = user_count
-		self.item_count = item_count
-		self.emb_size = emb_size
-		self.layers = [emb_size] * n_layers
-		self.stage_norm_adj = stage_orm_adjs
-		self.n_stages = n_stages
+    def __init__(self, user_count, item_count, emb_size, stage_orm_adjs : Dict[int,sp.csr_matrix], n_layers = 3, n_stages = 3):
+        super(_LGCNEncoder, self).__init__()
+        self.user_count = user_count
+        self.item_count = item_count
+        self.emb_size = emb_size
+        self.layers = [emb_size] * n_layers
+        self.stage_norm_adj = stage_orm_adjs
+        self.n_stages = n_stages
 
-		self.embedding_dict = self._init_model()
-		self.sparse_norm_adjs : Dict[int,torch.sparse.FloatTensor] = {}
-		for stage in range(1, self.n_stages + 1):
-			self.sparse_norm_adjs[stage] = self._convert_sp_mat_to_sp_tensor(self.stage_norm_adj[stage]).cuda()
-		
+        self.embedding_dict = self._init_model()
+        self.sparse_norm_adjs : Dict[int,torch.sparse.FloatTensor] = {}
+        for stage in range(1, self.n_stages + 1):
+            self.sparse_norm_adjs[stage] = self._convert_sp_mat_to_sp_tensor(self.stage_norm_adj[stage]).cuda()
+        
 
-	def _init_model(self):
-		initializer = nn.init.xavier_uniform_
-		embedding_dict = nn.ParameterDict({
-			'user_emb': nn.Parameter(initializer(torch.empty(self.user_count, self.emb_size))),
-			'item_emb': nn.Parameter(initializer(torch.empty(self.item_count, self.emb_size))),
-		})
-		return embedding_dict
+    def _init_model(self):
+        initializer = nn.init.xavier_uniform_
+        embedding_dict = nn.ParameterDict({
+            'user_emb': nn.Parameter(initializer(torch.empty(self.user_count, self.emb_size))),
+            'item_emb': nn.Parameter(initializer(torch.empty(self.item_count, self.emb_size))),
+        })
+        return embedding_dict
 
-	@staticmethod
-	def _convert_sp_mat_to_sp_tensor(X: sp.csr_matrix, device: torch.device = torch.device('cuda')) -> torch.sparse.FloatTensor:
-		"""
-		内存友好型 CSR/COO -> Torch Sparse Tensor
-		"""
-		if not sp.isspmatrix_coo(X):
-			X = X.tocoo()
+    @staticmethod
+    def _convert_sp_mat_to_sp_tensor(X: sp.csr_matrix, device: torch.device = torch.device('cuda')) -> torch.sparse.FloatTensor:
+        """
+        内存友好型 CSR/COO -> Torch Sparse Tensor
+        """
+        if not sp.isspmatrix_coo(X):
+            X = X.tocoo()
 
-		# 直接用 numpy 堆叠，避免 Python list
-		indices = np.vstack((X.row, X.col)).astype(np.int64)  # shape [2, nnz]
-		values = X.data.astype(np.float32)                     # shape [nnz]
+        # 直接用 numpy 堆叠，避免 Python list
+        indices = np.vstack((X.row, X.col)).astype(np.int64)  # shape [2, nnz]
+        values = X.data.astype(np.float32)                     # shape [nnz]
 
-		# 转为 Torch Tensor
-		i = torch.from_numpy(indices)
-		v = torch.from_numpy(values)
-		return torch.sparse_coo_tensor(i, v, X.shape, device=device)
+        # 转为 Torch Tensor
+        i = torch.from_numpy(indices)
+        v = torch.from_numpy(values)
+        return torch.sparse_coo_tensor(i, v, X.shape, device=device)
 
-	def forward(self, users, items,n_layers : int = 3 ,stage : int = 1) -> Tuple[torch.Tensor, torch.Tensor]:
-		"""
+    def forward(self, users, items,n_layers : int = 3 ,stage : int = 1) -> Tuple[torch.Tensor, torch.Tensor]:
+        """
         按照层数和阶段数进行高阶连接信息整合，并返回对应的用户和商品的编码向量
-		"""
-		ego_embeddings = torch.cat(
+        """
+        ego_embeddings = torch.cat(
                   [self.embedding_dict['user_emb'], 
                    self.embedding_dict['item_emb']], 
                    dim=0)
 
-		for _ in range(n_layers):
-			ego_embeddings = torch.sparse.mm(self.sparse_norm_adjs[stage], ego_embeddings)
+        for _ in range(n_layers):
+            ego_embeddings = torch.sparse.mm(self.sparse_norm_adjs[stage], ego_embeddings)
                   
 
-		user_all_embeddings = ego_embeddings[:self.user_count, :]
-		item_all_embeddings = ego_embeddings[self.user_count:, :]
+        user_all_embeddings = ego_embeddings[:self.user_count, :]
+        item_all_embeddings = ego_embeddings[self.user_count:, :]
 
-		user_embeddings = user_all_embeddings[users, :]
-		item_embeddings = item_all_embeddings[items, :]
+        user_embeddings = user_all_embeddings[users, :]
+        item_embeddings = item_all_embeddings[items, :]
 
-		return user_embeddings, item_embeddings
+        return user_embeddings, item_embeddings
       
