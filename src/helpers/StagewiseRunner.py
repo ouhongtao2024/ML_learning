@@ -20,6 +20,8 @@ class StagewiseRunner(BaseRunner):
 
         try:
             for stage in range(1, model.stages + 1):
+                model.optimizer = None
+
                 logging.info(f"开始第 {stage}/{model.stages} 阶段训练")
                 model.set_stage(stage=stage)
 
@@ -47,6 +49,10 @@ class StagewiseRunner(BaseRunner):
                     stage_main_metric_results.append(dev_result[self.main_metric])
 
                     logging_str = f"[Stage {stage}][Epoch {epoch}] loss={loss:.4f} [{training_time:.1f}s] dev=({dev_result})"  # noqa
+                    if dev_result[self.main_metric] == max(stage_main_metric_results):
+                        model.save_model()
+                        logging_str += " *"
+
                     logging.info(logging_str)
 
                     if self.early_stop > 0 and self.eval_termination(
