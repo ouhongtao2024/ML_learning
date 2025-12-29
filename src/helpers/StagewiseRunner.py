@@ -23,6 +23,8 @@ class StagewiseRunner(BaseRunner):
                 logging.info(f"开始第 {stage}/{model.stages} 阶段训练")
                 model.set_stage(stage=stage)
 
+                stage_main_metric_results = []
+
                 for epoch in range(1, self.epoch + 1):
                     self._check_time()
                     torch.cuda.empty_cache()
@@ -42,12 +44,13 @@ class StagewiseRunner(BaseRunner):
                     )
                     dev_results.append(dev_result)
                     main_metric_results.append(dev_result[self.main_metric])
+                    stage_main_metric_results.append(dev_result[self.main_metric])
 
                     logging_str = f"[Stage {stage}][Epoch {epoch}] loss={loss:.4f} [{training_time:.1f}s] dev=({dev_result})"  # noqa
                     logging.info(logging_str)
 
                     if self.early_stop > 0 and self.eval_termination(
-                        main_metric_results
+                        stage_main_metric_results
                     ):
                         logging.info(f"在第 {stage} 阶段第 {epoch} 轮发生早停")
                         break
