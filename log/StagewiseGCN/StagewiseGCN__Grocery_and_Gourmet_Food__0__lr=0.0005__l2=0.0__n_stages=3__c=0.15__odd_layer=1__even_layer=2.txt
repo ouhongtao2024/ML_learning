@@ -1,0 +1,123 @@
+INFO:root:Namespace(model_name='StagewiseGCN', model_mode='')
+INFO:root:--------------------------------------------- BEGIN: 2025-12-30 15:08:48 ---------------------------------------------
+INFO:root:
+===========================================
+ Arguments          | Values               
+===========================================
+ batch_size         | 512                 
+ c                  | 0.15                
+ data_appendix      |                     
+ dataset            | Grocery_and_Gourm...
+ dropout            | 0                   
+ early_stop         | 10                  
+ emb_size           | 64                  
+ epoch              | 500                 
+ eval_batch_size    | 512                 
+ even_layer         | 2                   
+ gpu                | 0                   
+ l2                 | 0.0                 
+ lr                 | 0.0005              
+ main_metric        |                     
+ n_layers           | 3                   
+ n_stages           | 3                   
+ num_neg            | 1                   
+ num_workers        | 5                   
+ odd_layer          | 1                   
+ optimizer          | Adam                
+ random_seed        | 0                   
+ save_final_results | 1                   
+ test_all           | 0                   
+ topk               | 5,10,20,50          
+===========================================
+INFO:root:Device: cuda
+INFO:root:Load corpus from data/Grocery_and_Gourmet_Food/BaseReader.pkl
+INFO:root:[StagewiseBase] Initializing model with emb_size=64, n_layers=3
+INFO:root:[StagewiseBase] Preparing stage-wise normalized adjacency matrices
+INFO:root:[StagewiseBase] Stage 1 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Stage 2 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Stage 3 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Defining encoder with stage 1 norm_adj
+INFO:root:#params: 1497344
+INFO:root:StagewiseGCN(
+  (encoder): _LGCNEncoder(
+    (embedding_dict): ParameterDict(
+        (item_emb): Parameter containing: [torch.cuda.FloatTensor of size 8714x64 (cuda:0)]
+        (user_emb): Parameter containing: [torch.cuda.FloatTensor of size 14682x64 (cuda:0)]
+    )
+  )
+)
+INFO:root:Test Before Training: (HR@5:0.0548,NDCG@5:0.0332,HR@10:0.1052,NDCG@10:0.0493,HR@20:0.2095,NDCG@20:0.0753,HR@50:0.5124,NDCG@50:0.1344)
+INFO:root:开始第 1/3 阶段训练
+INFO:root:[StagewiseBase] Switched to stage 1
+INFO:root:Optimizer: Adam
+INFO:root:[Stage 1][Epoch 1] loss=1.0516 [14.3s] dev=({'NDCG@5': 0.2523770742728488, 'HR@5': 0.36155575233294734}) *
+INFO:root:[Stage 1][Epoch 2] loss=0.8455 [13.2s] dev=({'NDCG@5': 0.2745057160033677, 'HR@5': 0.39288876779510934}) *
+INFO:root:[Stage 1][Epoch 3] loss=0.7589 [13.3s] dev=({'NDCG@5': 0.2838996140326223, 'HR@5': 0.4025611334377767}) *
+INFO:root:[Stage 1][Epoch 4] loss=0.6800 [13.2s] dev=({'NDCG@5': 0.2915454276118079, 'HR@5': 0.4131871125945099}) *
+INFO:root:[Stage 1][Epoch 5] loss=0.6143 [11.8s] dev=({'NDCG@5': 0.2966254301714187, 'HR@5': 0.4192493699339282}) *
+INFO:root:[Stage 1][Epoch 6] loss=0.5721 [8.1s] dev=({'NDCG@5': 0.3004311575002297, 'HR@5': 0.4246985900143042}) *
+INFO:root:[Stage 1][Epoch 7] loss=0.5347 [7.7s] dev=({'NDCG@5': 0.3039074157364849, 'HR@5': 0.4293985423336285}) *
+INFO:root:[Stage 1][Epoch 8] loss=0.4954 [7.7s] dev=({'NDCG@5': 0.3071943855241399, 'HR@5': 0.4334854573939105}) *
+INFO:root:[Stage 1][Epoch 9] loss=0.4639 [7.7s] dev=({'NDCG@5': 0.3089294033151539, 'HR@5': 0.4340303794019481}) *
+INFO:root:[Stage 1][Epoch 10] loss=0.4276 [7.7s] dev=({'NDCG@5': 0.31172903601107627, 'HR@5': 0.4366868741911314}) *
+INFO:root:[Stage 1][Epoch 11] loss=0.3895 [7.8s] dev=({'NDCG@5': 0.3139268383566383, 'HR@5': 0.4380491792112254}) *
+INFO:root:[Stage 1][Epoch 12] loss=0.3623 [7.7s] dev=({'NDCG@5': 0.3156242120240098, 'HR@5': 0.4396839452353382}) *
+INFO:root:[Stage 1][Epoch 13] loss=0.3395 [7.7s] dev=({'NDCG@5': 0.31658026874299444, 'HR@5': 0.4402969824943805}) *
+INFO:root:[Stage 1][Epoch 14] loss=0.3120 [7.7s] dev=({'NDCG@5': 0.31686924299890157, 'HR@5': 0.4383897554662489}) *
+INFO:root:[Stage 1][Epoch 15] loss=0.2867 [7.7s] dev=({'NDCG@5': 0.3190016975041554, 'HR@5': 0.4408419045024181}) *
+INFO:root:[Stage 1][Epoch 16] loss=0.2640 [7.8s] dev=({'NDCG@5': 0.319348416447479, 'HR@5': 0.4390709079762959}) *
+INFO:root:[Stage 1][Epoch 17] loss=0.2465 [7.7s] dev=({'NDCG@5': 0.32011720014438977, 'HR@5': 0.43954771473332876}) *
+INFO:root:[Stage 1][Epoch 18] loss=0.2303 [7.7s] dev=({'NDCG@5': 0.32079298893310937, 'HR@5': 0.4391390232273006}) *
+INFO:root:[Stage 1][Epoch 19] loss=0.2098 [7.7s] dev=({'NDCG@5': 0.3220932368456265, 'HR@5': 0.4408419045024181}) *
+INFO:root:[Stage 1][Epoch 20] loss=0.1954 [7.7s] dev=({'NDCG@5': 0.322500481630839, 'HR@5': 0.439956406239357}) *
+INFO:root:[Stage 1][Epoch 21] loss=0.1860 [7.7s] dev=({'NDCG@5': 0.32237448263766105, 'HR@5': 0.4390027927252912})
+INFO:root:[Stage 1][Epoch 22] loss=0.1735 [7.7s] dev=({'NDCG@5': 0.3203723181313086, 'HR@5': 0.4362781826851032})
+INFO:root:[Stage 1][Epoch 23] loss=0.1607 [7.7s] dev=({'NDCG@5': 0.32013772995905515, 'HR@5': 0.4347115319119951})
+INFO:root:[Stage 1][Epoch 24] loss=0.1502 [7.7s] dev=({'NDCG@5': 0.3186170629233992, 'HR@5': 0.4319188066208024})
+INFO:root:[Stage 1][Epoch 25] loss=0.1400 [7.7s] dev=({'NDCG@5': 0.3181245115191364, 'HR@5': 0.4302159253456849})
+INFO:root:[Stage 1][Epoch 26] loss=0.1312 [5.3s] dev=({'NDCG@5': 0.31745540987926535, 'HR@5': 0.4292623118316191})
+INFO:root:[Stage 1][Epoch 27] loss=0.1253 [7.7s] dev=({'NDCG@5': 0.3160441607065019, 'HR@5': 0.4259246645323888})
+INFO:root:[Stage 1][Epoch 28] loss=0.1173 [7.7s] dev=({'NDCG@5': 0.3171459592289085, 'HR@5': 0.4276275458075063})
+INFO:root:[Stage 1][Epoch 29] loss=0.1079 [7.7s] dev=({'NDCG@5': 0.31537715995020615, 'HR@5': 0.4246304747632995})
+INFO:root:在第 1 阶段第 29 轮发生早停
+INFO:root:开始第 2/3 阶段训练
+INFO:root:[StagewiseBase] Switched to stage 2
+INFO:root:Optimizer: Adam
+INFO:root:[Stage 2][Epoch 1] loss=0.4591 [14.2s] dev=({'NDCG@5': 0.32504685682490037, 'HR@5': 0.4396839452353382}) *
+INFO:root:[Stage 2][Epoch 2] loss=0.4030 [14.1s] dev=({'NDCG@5': 0.3271135834554879, 'HR@5': 0.44302159253456846}) *
+INFO:root:[Stage 2][Epoch 3] loss=0.3715 [14.2s] dev=({'NDCG@5': 0.3262119485998922, 'HR@5': 0.4415911722634698})
+INFO:root:[Stage 2][Epoch 4] loss=0.3485 [14.2s] dev=({'NDCG@5': 0.3250128871192747, 'HR@5': 0.4401607519923711})
+INFO:root:[Stage 2][Epoch 5] loss=0.3183 [14.2s] dev=({'NDCG@5': 0.3247604235651766, 'HR@5': 0.4393433689803147})
+INFO:root:[Stage 2][Epoch 6] loss=0.3035 [14.2s] dev=({'NDCG@5': 0.32344466117021003, 'HR@5': 0.4362781826851032})
+INFO:root:[Stage 2][Epoch 7] loss=0.2875 [14.2s] dev=({'NDCG@5': 0.3223186889642423, 'HR@5': 0.4340984946529528})
+INFO:root:[Stage 2][Epoch 8] loss=0.2731 [14.2s] dev=({'NDCG@5': 0.3230618582691726, 'HR@5': 0.4346434166609904})
+INFO:root:[Stage 2][Epoch 9] loss=0.2632 [14.2s] dev=({'NDCG@5': 0.32170562545910103, 'HR@5': 0.4327361896328588})
+INFO:root:[Stage 2][Epoch 10] loss=0.2528 [11.5s] dev=({'NDCG@5': 0.3202884536313479, 'HR@5': 0.4305565016007084})
+INFO:root:[Stage 2][Epoch 11] loss=0.2415 [14.2s] dev=({'NDCG@5': 0.3200341068487664, 'HR@5': 0.4303521558476943})
+INFO:root:在第 2 阶段第 11 轮发生早停
+INFO:root:开始第 3/3 阶段训练
+INFO:root:[StagewiseBase] Switched to stage 3
+INFO:root:Optimizer: Adam
+INFO:root:[Stage 3][Epoch 1] loss=0.8320 [20.7s] dev=({'NDCG@5': 0.3248441906198981, 'HR@5': 0.4383897554662489}) *
+INFO:root:[Stage 3][Epoch 2] loss=0.7851 [20.7s] dev=({'NDCG@5': 0.3260484290219415, 'HR@5': 0.43947959948232407}) *
+INFO:root:[Stage 3][Epoch 3] loss=0.7478 [20.7s] dev=({'NDCG@5': 0.3251263240611244, 'HR@5': 0.4383897554662489})
+INFO:root:[Stage 3][Epoch 4] loss=0.7077 [20.7s] dev=({'NDCG@5': 0.3254292332745151, 'HR@5': 0.4388665622232818})
+INFO:root:[Stage 3][Epoch 5] loss=0.6844 [20.8s] dev=({'NDCG@5': 0.32508684455348297, 'HR@5': 0.4384578707172536})
+INFO:root:[Stage 3][Epoch 6] loss=0.6583 [20.7s] dev=({'NDCG@5': 0.3241191584001341, 'HR@5': 0.4362100674340985})
+INFO:root:[Stage 3][Epoch 7] loss=0.6298 [19.9s] dev=({'NDCG@5': 0.32319278316467936, 'HR@5': 0.43484776241400447})
+INFO:root:[Stage 3][Epoch 8] loss=0.6063 [20.8s] dev=({'NDCG@5': 0.3231324118014597, 'HR@5': 0.435188338669028})
+INFO:root:[Stage 3][Epoch 9] loss=0.5897 [20.8s] dev=({'NDCG@5': 0.322611452901176, 'HR@5': 0.4342347251549622})
+INFO:root:[Stage 3][Epoch 10] loss=0.5659 [20.7s] dev=({'NDCG@5': 0.3216571418668369, 'HR@5': 0.4323274981268306})
+INFO:root:[Stage 3][Epoch 11] loss=0.5627 [20.7s] dev=({'NDCG@5': 0.32113496115669715, 'HR@5': 0.4310333083577413})
+INFO:root:在第 3 阶段第 11 轮发生早停
+INFO:root:Load model from ../model/StagewiseGCN/StagewiseGCN__Grocery_and_Gourmet_Food__0__lr=0.0005__l2=0.0__n_stages=3__c=0.15__odd_layer=1__even_layer=2.pt
+INFO:root:
+Dev  After Training: (HR@5:0.4395,NDCG@5:0.3260,HR@10:0.5402,NDCG@10:0.3588,HR@20:0.6489,NDCG@20:0.3862,HR@50:0.8321,NDCG@50:0.4223)
+INFO:root:
+Test After Training: (HR@5:0.3629,NDCG@5:0.2586,HR@10:0.4658,NDCG@10:0.2918,HR@20:0.5883,NDCG@20:0.3226,HR@50:0.8003,NDCG@50:0.3644)
+INFO:root:Saving top-100 recommendation results to: ../log/StagewiseGCN/StagewiseGCN__Grocery_and_Gourmet_Food__0__lr=0/rec-StagewiseGCN-dev.csv
+INFO:root:dev Prediction results saved!
+INFO:root:Saving top-100 recommendation results to: ../log/StagewiseGCN/StagewiseGCN__Grocery_and_Gourmet_Food__0__lr=0/rec-StagewiseGCN-test.csv
+INFO:root:test Prediction results saved!
+INFO:root:
+--------------------------------------------- END: 2025-12-30 15:20:15 ---------------------------------------------

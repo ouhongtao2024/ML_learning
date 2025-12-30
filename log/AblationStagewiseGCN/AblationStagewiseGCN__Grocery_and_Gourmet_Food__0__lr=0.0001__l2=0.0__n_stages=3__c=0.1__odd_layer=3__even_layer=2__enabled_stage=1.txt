@@ -1,0 +1,123 @@
+INFO:root:Namespace(model_name='AblationStagewiseGCN', model_mode='')
+INFO:root:--------------------------------------------- BEGIN: 2025-12-29 23:19:06 ---------------------------------------------
+INFO:root:
+===========================================
+ Arguments          | Values               
+===========================================
+ batch_size         | 512                 
+ c                  | 0.1                 
+ data_appendix      |                     
+ dataset            | Grocery_and_Gourm...
+ dropout            | 0                   
+ early_stop         | 10                  
+ emb_size           | 64                  
+ enabled_stage      | 1                   
+ epoch              | 500                 
+ eval_batch_size    | 512                 
+ even_layer         | 2                   
+ gpu                | 0                   
+ l2                 | 0.0                 
+ lr                 | 0.0001              
+ main_metric        |                     
+ n_layers           | 3                   
+ n_stages           | 3                   
+ num_neg            | 1                   
+ num_workers        | 5                   
+ odd_layer          | 3                   
+ optimizer          | Adam                
+ random_seed        | 0                   
+ save_final_results | 1                   
+ test_all           | 0                   
+ topk               | 5,10,20,50          
+===========================================
+INFO:root:Device: cuda
+INFO:root:Load corpus from data/Grocery_and_Gourmet_Food/BaseReader.pkl
+INFO:root:[StagewiseBase] Initializing model with emb_size=64, n_layers=3
+INFO:root:[StagewiseBase] Preparing stage-wise normalized adjacency matrices
+INFO:root:[StagewiseBase] Stage 1 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Stage 2 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Stage 3 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Defining encoder with stage 1 norm_adj
+INFO:root:#params: 1497344
+INFO:root:AblationStagewiseGCN(
+  (encoder): _LGCNEncoder(
+    (embedding_dict): ParameterDict(
+        (item_emb): Parameter containing: [torch.cuda.FloatTensor of size 8714x64 (cuda:0)]
+        (user_emb): Parameter containing: [torch.cuda.FloatTensor of size 14682x64 (cuda:0)]
+    )
+  )
+)
+INFO:root:Namespace(model_name='AblationStagewiseGCN', model_mode='')
+INFO:root:--------------------------------------------- BEGIN: 2025-12-29 23:19:14 ---------------------------------------------
+INFO:root:
+===========================================
+ Arguments          | Values               
+===========================================
+ batch_size         | 512                 
+ c                  | 0.1                 
+ data_appendix      |                     
+ dataset            | Grocery_and_Gourm...
+ dropout            | 0                   
+ early_stop         | 10                  
+ emb_size           | 64                  
+ enabled_stage      | 1                   
+ epoch              | 500                 
+ eval_batch_size    | 512                 
+ even_layer         | 2                   
+ gpu                | 0                   
+ l2                 | 0.0                 
+ lr                 | 0.0001              
+ main_metric        |                     
+ n_layers           | 3                   
+ n_stages           | 3                   
+ num_neg            | 1                   
+ num_workers        | 5                   
+ odd_layer          | 3                   
+ optimizer          | Adam                
+ random_seed        | 0                   
+ save_final_results | 1                   
+ test_all           | 0                   
+ topk               | 5,10,20,50          
+===========================================
+INFO:root:Device: cuda
+INFO:root:Load corpus from data/Grocery_and_Gourmet_Food/BaseReader.pkl
+INFO:root:[StagewiseBase] Initializing model with emb_size=64, n_layers=3
+INFO:root:[StagewiseBase] Preparing stage-wise normalized adjacency matrices
+INFO:root:[StagewiseBase] Stage 1 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Stage 2 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Stage 3 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Defining encoder with stage 1 norm_adj
+INFO:root:#params: 1497344
+INFO:root:AblationStagewiseGCN(
+  (encoder): _LGCNEncoder(
+    (embedding_dict): ParameterDict(
+        (item_emb): Parameter containing: [torch.cuda.FloatTensor of size 8714x64 (cuda:0)]
+        (user_emb): Parameter containing: [torch.cuda.FloatTensor of size 14682x64 (cuda:0)]
+    )
+  )
+)
+INFO:root:Test Before Training: (HR@5:0.0693,NDCG@5:0.0437,HR@10:0.1236,NDCG@10:0.0610,HR@20:0.2274,NDCG@20:0.0868,HR@50:0.5344,NDCG@50:0.1468)
+INFO:root:开始第 1/3 阶段训练
+INFO:root:[StagewiseBase] Switched to stage 1
+INFO:root:Optimizer: Adam
+INFO:root:[Stage 1][Epoch 1] loss=1.2164 [17.3s] dev=({'NDCG@5': 0.15023837845175492, 'HR@5': 0.23704107349635584}) *
+INFO:root:[Stage 1][Epoch 2] loss=1.0912 [15.6s] dev=({'NDCG@5': 0.16186895137211732, 'HR@5': 0.253797425243512}) *
+INFO:root:[Stage 1][Epoch 3] loss=1.0381 [15.9s] dev=({'NDCG@5': 0.21783409176938612, 'HR@5': 0.3297459301137525}) *
+INFO:root:[Stage 1][Epoch 4] loss=0.9178 [15.6s] dev=({'NDCG@5': 0.23846541491646542, 'HR@5': 0.35106600367822355}) *
+INFO:root:[Stage 1][Epoch 5] loss=0.8371 [16.0s] dev=({'NDCG@5': 0.24422707309120517, 'HR@5': 0.35719637626864653}) *
+INFO:root:[Stage 1][Epoch 6] loss=0.8119 [15.8s] dev=({'NDCG@5': 0.24828465620654686, 'HR@5': 0.36148763708194265}) *
+INFO:root:[Stage 1][Epoch 7] loss=0.7982 [15.7s] dev=({'NDCG@5': 0.2532135286745378, 'HR@5': 0.36720931816633745}) *
+INFO:root:[Stage 1][Epoch 8] loss=0.7825 [15.1s] dev=({'NDCG@5': 0.25858987349381235, 'HR@5': 0.37333969075676043}) *
+INFO:root:[Stage 1][Epoch 9] loss=0.7675 [15.8s] dev=({'NDCG@5': 0.2638042433684287, 'HR@5': 0.37858456508412236}) *
+INFO:root:[Stage 1][Epoch 10] loss=0.7474 [15.9s] dev=({'NDCG@5': 0.27106346787004065, 'HR@5': 0.38798446972277095}) *
+INFO:root:[Stage 1][Epoch 11] loss=0.7250 [15.9s] dev=({'NDCG@5': 0.2759315337106154, 'HR@5': 0.395681493086302}) *
+INFO:root:[Stage 1][Epoch 12] loss=0.7034 [15.9s] dev=({'NDCG@5': 0.2798401990545216, 'HR@5': 0.4002452149036169}) *
+INFO:root:[Stage 1][Epoch 13] loss=0.6927 [15.7s] dev=({'NDCG@5': 0.28238643776426753, 'HR@5': 0.4019480961787344}) *
+INFO:root:[Stage 1][Epoch 14] loss=0.6769 [16.0s] dev=({'NDCG@5': 0.284080430623383, 'HR@5': 0.403855323206866}) *
+INFO:root:[Stage 1][Epoch 15] loss=0.6518 [15.8s] dev=({'NDCG@5': 0.28579882647292437, 'HR@5': 0.40583066548600233}) *
+INFO:root:[Stage 1][Epoch 16] loss=0.6412 [15.9s] dev=({'NDCG@5': 0.2874537671513946, 'HR@5': 0.40801035351815274}) *
+INFO:root:[Stage 1][Epoch 17] loss=0.6277 [14.9s] dev=({'NDCG@5': 0.2885566289392673, 'HR@5': 0.40930454328724203}) *
+INFO:root:[Stage 1][Epoch 18] loss=0.6226 [15.9s] dev=({'NDCG@5': 0.2889499153431468, 'HR@5': 0.4094407737892514}) *
+INFO:root:[Stage 1][Epoch 19] loss=0.6057 [15.9s] dev=({'NDCG@5': 0.28983452042727226, 'HR@5': 0.4107349635583407}) *
+INFO:root:[Stage 1][Epoch 20] loss=0.5980 [8.7s] dev=({'NDCG@5': 0.29055054997308405, 'HR@5': 0.4112117703153736}) *
+INFO:root:[Stage 1][Epoch 21] loss=0.5896 [7.4s] dev=({'NDCG@5': 0.2910094850911744, 'HR@5': 0.41148423131939244}) *

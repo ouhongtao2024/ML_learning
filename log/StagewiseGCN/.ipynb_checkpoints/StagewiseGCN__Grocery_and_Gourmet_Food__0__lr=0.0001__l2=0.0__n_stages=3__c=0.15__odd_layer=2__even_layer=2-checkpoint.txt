@@ -1,0 +1,219 @@
+INFO:root:Namespace(model_name='StagewiseGCN', model_mode='')
+INFO:root:--------------------------------------------- BEGIN: 2025-12-30 03:27:56 ---------------------------------------------
+INFO:root:
+===========================================
+ Arguments          | Values               
+===========================================
+ batch_size         | 512                 
+ c                  | 0.15                
+ data_appendix      |                     
+ dataset            | Grocery_and_Gourm...
+ dropout            | 0                   
+ early_stop         | 10                  
+ emb_size           | 64                  
+ epoch              | 500                 
+ eval_batch_size    | 512                 
+ even_layer         | 2                   
+ gpu                | 0                   
+ l2                 | 0.0                 
+ lr                 | 0.0001              
+ main_metric        |                     
+ n_layers           | 3                   
+ n_stages           | 3                   
+ num_neg            | 1                   
+ num_workers        | 5                   
+ odd_layer          | 2                   
+ optimizer          | Adam                
+ random_seed        | 0                   
+ save_final_results | 1                   
+ test_all           | 0                   
+ topk               | 5,10,20,50          
+===========================================
+INFO:root:Device: cuda
+INFO:root:Load corpus from data/Grocery_and_Gourmet_Food/BaseReader.pkl
+INFO:root:[StagewiseBase] Initializing model with emb_size=64, n_layers=3
+INFO:root:[StagewiseBase] Preparing stage-wise normalized adjacency matrices
+INFO:root:[StagewiseBase] Stage 1 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Stage 2 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Stage 3 normalized adjacency matrix shape: (23396, 23396), nnz: 267180
+INFO:root:[StagewiseBase] Defining encoder with stage 1 norm_adj
+INFO:root:#params: 1497344
+INFO:root:StagewiseGCN(
+  (encoder): _LGCNEncoder(
+    (embedding_dict): ParameterDict(
+        (item_emb): Parameter containing: [torch.cuda.FloatTensor of size 8714x64 (cuda:0)]
+        (user_emb): Parameter containing: [torch.cuda.FloatTensor of size 14682x64 (cuda:0)]
+    )
+  )
+)
+INFO:root:Test Before Training: (HR@5:0.0787,NDCG@5:0.0505,HR@10:0.1334,NDCG@10:0.0679,HR@20:0.2342,NDCG@20:0.0931,HR@50:0.5258,NDCG@50:0.1500)
+INFO:root:开始第 1/3 阶段训练
+INFO:root:[StagewiseBase] Switched to stage 1
+INFO:root:Optimizer: Adam
+INFO:root:[Stage 1][Epoch 1] loss=1.1484 [20.2s] dev=({'NDCG@5': 0.16700650295957375, 'HR@5': 0.26115387235201964}) *
+INFO:root:[Stage 1][Epoch 2] loss=0.9288 [19.0s] dev=({'NDCG@5': 0.21356920787759548, 'HR@5': 0.32082283223213676}) *
+INFO:root:[Stage 1][Epoch 3] loss=0.8258 [19.0s] dev=({'NDCG@5': 0.23534875503865654, 'HR@5': 0.34289217355765955}) *
+INFO:root:[Stage 1][Epoch 4] loss=0.7676 [19.0s] dev=({'NDCG@5': 0.24564660304209102, 'HR@5': 0.35481234248348203}) *
+INFO:root:[Stage 1][Epoch 5] loss=0.7266 [18.7s] dev=({'NDCG@5': 0.2534331610765438, 'HR@5': 0.36468905387916356}) *
+INFO:root:[Stage 1][Epoch 6] loss=0.7004 [19.0s] dev=({'NDCG@5': 0.2607845134689011, 'HR@5': 0.37313534500374634}) *
+INFO:root:[Stage 1][Epoch 7] loss=0.6786 [19.0s] dev=({'NDCG@5': 0.2687475619449093, 'HR@5': 0.3828758258974184}) *
+INFO:root:[Stage 1][Epoch 8] loss=0.6570 [18.9s] dev=({'NDCG@5': 0.27407007637715, 'HR@5': 0.39043661875894015}) *
+INFO:root:[Stage 1][Epoch 9] loss=0.6387 [19.0s] dev=({'NDCG@5': 0.2779267135765864, 'HR@5': 0.3969075676043866}) *
+INFO:root:[Stage 1][Epoch 10] loss=0.6205 [18.4s] dev=({'NDCG@5': 0.2805811499808838, 'HR@5': 0.3996321776445746}) *
+INFO:root:[Stage 1][Epoch 11] loss=0.6012 [19.0s] dev=({'NDCG@5': 0.282520778472642, 'HR@5': 0.4014712894217015}) *
+INFO:root:[Stage 1][Epoch 12] loss=0.5852 [19.0s] dev=({'NDCG@5': 0.284590368371003, 'HR@5': 0.4037872079558613}) *
+INFO:root:[Stage 1][Epoch 13] loss=0.5750 [19.0s] dev=({'NDCG@5': 0.28659592390905586, 'HR@5': 0.4054900892309788}) *
+INFO:root:[Stage 1][Epoch 14] loss=0.5634 [18.7s] dev=({'NDCG@5': 0.28838446691017905, 'HR@5': 0.4076016620121245}) *
+INFO:root:[Stage 1][Epoch 15] loss=0.5423 [19.0s] dev=({'NDCG@5': 0.2897349739966323, 'HR@5': 0.4097132347932702}) *
+INFO:root:[Stage 1][Epoch 16] loss=0.5310 [19.0s] dev=({'NDCG@5': 0.29118460028697757, 'HR@5': 0.41148423131939244}) *
+INFO:root:[Stage 1][Epoch 17] loss=0.5190 [19.0s] dev=({'NDCG@5': 0.2922933850526588, 'HR@5': 0.4137320346025475}) *
+INFO:root:[Stage 1][Epoch 18] loss=0.5138 [18.9s] dev=({'NDCG@5': 0.29408126869055423, 'HR@5': 0.4156392616306791}) *
+INFO:root:[Stage 1][Epoch 19] loss=0.4964 [18.9s] dev=({'NDCG@5': 0.29476263059567404, 'HR@5': 0.4165928751447449}) *
+INFO:root:[Stage 1][Epoch 20] loss=0.4868 [19.0s] dev=({'NDCG@5': 0.29657083529052597, 'HR@5': 0.41850010217287653}) *
+INFO:root:[Stage 1][Epoch 21] loss=0.4778 [18.9s] dev=({'NDCG@5': 0.2982891097568455, 'HR@5': 0.4209522512090457}) *
+INFO:root:[Stage 1][Epoch 22] loss=0.4710 [17.8s] dev=({'NDCG@5': 0.29928356340495565, 'HR@5': 0.42197397997411623}) *
+INFO:root:[Stage 1][Epoch 23] loss=0.4603 [19.0s] dev=({'NDCG@5': 0.3003743743686397, 'HR@5': 0.4234044002452149}) *
+INFO:root:[Stage 1][Epoch 24] loss=0.4507 [18.9s] dev=({'NDCG@5': 0.3013009218922601, 'HR@5': 0.4244261290102854}) *
+INFO:root:[Stage 1][Epoch 25] loss=0.4396 [19.0s] dev=({'NDCG@5': 0.30202424699921715, 'HR@5': 0.4257203187793747}) *
+INFO:root:[Stage 1][Epoch 26] loss=0.4353 [19.0s] dev=({'NDCG@5': 0.3031392797677785, 'HR@5': 0.4264014712894217}) *
+INFO:root:[Stage 1][Epoch 27] loss=0.4294 [19.0s] dev=({'NDCG@5': 0.3036108387949235, 'HR@5': 0.427695661058511}) *
+INFO:root:[Stage 1][Epoch 28] loss=0.4207 [19.0s] dev=({'NDCG@5': 0.30491846841635134, 'HR@5': 0.429057966078605}) *
+INFO:root:[Stage 1][Epoch 29] loss=0.4113 [19.0s] dev=({'NDCG@5': 0.3051755433930614, 'HR@5': 0.4296028880866426}) *
+INFO:root:[Stage 1][Epoch 30] loss=0.4075 [18.5s] dev=({'NDCG@5': 0.30621074354901184, 'HR@5': 0.4312376541107554}) *
+INFO:root:[Stage 1][Epoch 31] loss=0.3977 [19.0s] dev=({'NDCG@5': 0.3077230935660295, 'HR@5': 0.4334854573939105}) *
+INFO:root:[Stage 1][Epoch 32] loss=0.3919 [19.0s] dev=({'NDCG@5': 0.30805092439081505, 'HR@5': 0.4342347251549622}) *
+INFO:root:[Stage 1][Epoch 33] loss=0.3885 [18.4s] dev=({'NDCG@5': 0.3092779693234871, 'HR@5': 0.4364825284381173}) *
+INFO:root:[Stage 1][Epoch 34] loss=0.3775 [18.8s] dev=({'NDCG@5': 0.310124977990493, 'HR@5': 0.43832164021524417}) *
+INFO:root:[Stage 1][Epoch 35] loss=0.3758 [19.0s] dev=({'NDCG@5': 0.3105616025577649, 'HR@5': 0.4385259859682583}) *
+INFO:root:[Stage 1][Epoch 36] loss=0.3687 [19.0s] dev=({'NDCG@5': 0.3108747275341642, 'HR@5': 0.4388665622232818}) *
+INFO:root:[Stage 1][Epoch 37] loss=0.3608 [18.9s] dev=({'NDCG@5': 0.3113271193438374, 'HR@5': 0.4390709079762959}) *
+INFO:root:[Stage 1][Epoch 38] loss=0.3554 [18.5s] dev=({'NDCG@5': 0.31273494590037176, 'HR@5': 0.4407737892514134}) *
+INFO:root:[Stage 1][Epoch 39] loss=0.3512 [19.0s] dev=({'NDCG@5': 0.3130630299918767, 'HR@5': 0.44172740276547917}) *
+INFO:root:[Stage 1][Epoch 40] loss=0.3478 [18.9s] dev=({'NDCG@5': 0.31380615885351737, 'HR@5': 0.4425447857775356}) *
+INFO:root:[Stage 1][Epoch 41] loss=0.3379 [19.0s] dev=({'NDCG@5': 0.31444431100439835, 'HR@5': 0.4437708602956202}) *
+INFO:root:[Stage 1][Epoch 42] loss=0.3348 [19.0s] dev=({'NDCG@5': 0.3152086516317381, 'HR@5': 0.4437027450446155}) *
+INFO:root:[Stage 1][Epoch 43] loss=0.3280 [19.0s] dev=({'NDCG@5': 0.3156982775416949, 'HR@5': 0.4443157823036578}) *
+INFO:root:[Stage 1][Epoch 44] loss=0.3236 [19.0s] dev=({'NDCG@5': 0.31581981830994704, 'HR@5': 0.44417955180164836}) *
+INFO:root:[Stage 1][Epoch 45] loss=0.3177 [18.7s] dev=({'NDCG@5': 0.3163058001596939, 'HR@5': 0.4450650500647095}) *
+INFO:root:[Stage 1][Epoch 46] loss=0.3125 [18.6s] dev=({'NDCG@5': 0.31684501392342546, 'HR@5': 0.4444520128056672}) *
+INFO:root:[Stage 1][Epoch 47] loss=0.3061 [19.1s] dev=({'NDCG@5': 0.31674562753982033, 'HR@5': 0.4443157823036578})
+INFO:root:[Stage 1][Epoch 48] loss=0.2994 [19.1s] dev=({'NDCG@5': 0.31787624500055117, 'HR@5': 0.4445882433076766}) *
+INFO:root:[Stage 1][Epoch 49] loss=0.2955 [19.1s] dev=({'NDCG@5': 0.31872668176017743, 'HR@5': 0.4459505483277706}) *
+INFO:root:[Stage 1][Epoch 50] loss=0.2894 [18.9s] dev=({'NDCG@5': 0.3191725266564932, 'HR@5': 0.4458824330767659}) *
+INFO:root:[Stage 1][Epoch 51] loss=0.2906 [19.1s] dev=({'NDCG@5': 0.31974352685305074, 'HR@5': 0.4461548940807847}) *
+INFO:root:[Stage 1][Epoch 52] loss=0.2808 [19.1s] dev=({'NDCG@5': 0.3198001306245561, 'HR@5': 0.44608677882978}) *
+INFO:root:[Stage 1][Epoch 53] loss=0.2767 [18.9s] dev=({'NDCG@5': 0.3200225134939517, 'HR@5': 0.4457462025747565}) *
+INFO:root:[Stage 1][Epoch 54] loss=0.2699 [18.6s] dev=({'NDCG@5': 0.32098900792669366, 'HR@5': 0.4473128533478646}) *
+INFO:root:[Stage 1][Epoch 55] loss=0.2655 [19.1s] dev=({'NDCG@5': 0.3219946369375789, 'HR@5': 0.4480621211089163}) *
+INFO:root:[Stage 1][Epoch 56] loss=0.2603 [18.9s] dev=({'NDCG@5': 0.32224210794594665, 'HR@5': 0.44867515836795857}) *
+INFO:root:[Stage 1][Epoch 57] loss=0.2569 [19.1s] dev=({'NDCG@5': 0.32243374337358277, 'HR@5': 0.44887950412097266}) *
+INFO:root:[Stage 1][Epoch 58] loss=0.2500 [19.2s] dev=({'NDCG@5': 0.3224683742219126, 'HR@5': 0.44867515836795857}) *
+INFO:root:[Stage 1][Epoch 59] loss=0.2447 [19.1s] dev=({'NDCG@5': 0.32269263424465855, 'HR@5': 0.449492541380015}) *
+INFO:root:[Stage 1][Epoch 60] loss=0.2433 [19.1s] dev=({'NDCG@5': 0.32309761997071174, 'HR@5': 0.450173693890062}) *
+INFO:root:[Stage 1][Epoch 61] loss=0.2413 [18.5s] dev=({'NDCG@5': 0.32262338195951457, 'HR@5': 0.449492541380015})
+INFO:root:[Stage 1][Epoch 62] loss=0.2348 [18.6s] dev=({'NDCG@5': 0.32352622985817964, 'HR@5': 0.4505823853960902}) *
+INFO:root:[Stage 1][Epoch 63] loss=0.2276 [19.0s] dev=({'NDCG@5': 0.3245870758600428, 'HR@5': 0.4519446904161842}) *
+INFO:root:[Stage 1][Epoch 64] loss=0.2223 [19.1s] dev=({'NDCG@5': 0.3249502108167451, 'HR@5': 0.4520128056671889}) *
+INFO:root:[Stage 1][Epoch 65] loss=0.2191 [19.1s] dev=({'NDCG@5': 0.32477826136551124, 'HR@5': 0.45214903616919827})
+INFO:root:[Stage 1][Epoch 66] loss=0.2179 [19.0s] dev=({'NDCG@5': 0.3249005739294773, 'HR@5': 0.45228526667120766})
+INFO:root:[Stage 1][Epoch 67] loss=0.2130 [19.1s] dev=({'NDCG@5': 0.32556631060716357, 'HR@5': 0.45242149717321706}) *
+INFO:root:[Stage 1][Epoch 68] loss=0.2053 [19.1s] dev=({'NDCG@5': 0.32594566651732393, 'HR@5': 0.4524896124242218}) *
+INFO:root:[Stage 1][Epoch 69] loss=0.2019 [19.0s] dev=({'NDCG@5': 0.3264240590499292, 'HR@5': 0.4531026496832641}) *
+INFO:root:[Stage 1][Epoch 70] loss=0.1991 [18.6s] dev=({'NDCG@5': 0.32695623394022666, 'HR@5': 0.45351134118929226}) *
+INFO:root:[Stage 1][Epoch 71] loss=0.1957 [19.1s] dev=({'NDCG@5': 0.326854412427773, 'HR@5': 0.45357945644029696})
+INFO:root:[Stage 1][Epoch 72] loss=0.1937 [18.9s] dev=({'NDCG@5': 0.3267571251409013, 'HR@5': 0.4530345344322594})
+INFO:root:[Stage 1][Epoch 73] loss=0.1891 [19.1s] dev=({'NDCG@5': 0.3273610770065829, 'HR@5': 0.4541243784483346}) *
+INFO:root:[Stage 1][Epoch 74] loss=0.1836 [19.1s] dev=({'NDCG@5': 0.3275021614217246, 'HR@5': 0.4540562631973299}) *
+INFO:root:[Stage 1][Epoch 75] loss=0.1786 [19.0s] dev=({'NDCG@5': 0.3283392886169823, 'HR@5': 0.4550779919624004}) *
+INFO:root:[Stage 1][Epoch 76] loss=0.1776 [19.1s] dev=({'NDCG@5': 0.3283739456194368, 'HR@5': 0.4551461072134051}) *
+INFO:root:[Stage 1][Epoch 77] loss=0.1740 [19.0s] dev=({'NDCG@5': 0.32857246877822033, 'HR@5': 0.45453306995436277}) *
+INFO:root:[Stage 1][Epoch 78] loss=0.1722 [18.5s] dev=({'NDCG@5': 0.3284384588021532, 'HR@5': 0.4543287242013487})
+INFO:root:[Stage 1][Epoch 79] loss=0.1652 [18.9s] dev=({'NDCG@5': 0.32844095505202486, 'HR@5': 0.45460118520536746})
+INFO:root:[Stage 1][Epoch 80] loss=0.1661 [19.1s] dev=({'NDCG@5': 0.3284549979322429, 'HR@5': 0.45446495470335807})
+INFO:root:[Stage 1][Epoch 81] loss=0.1614 [19.1s] dev=({'NDCG@5': 0.32889495537040336, 'HR@5': 0.4539200326953205}) *
+INFO:root:[Stage 1][Epoch 82] loss=0.1579 [19.0s] dev=({'NDCG@5': 0.3292647601732253, 'HR@5': 0.4550098767113957}) *
+INFO:root:[Stage 1][Epoch 83] loss=0.1550 [19.1s] dev=({'NDCG@5': 0.3288617082504153, 'HR@5': 0.4537838021933111})
+INFO:root:[Stage 1][Epoch 84] loss=0.1541 [19.1s] dev=({'NDCG@5': 0.32936374393466644, 'HR@5': 0.4539881479463252}) *
+INFO:root:[Stage 1][Epoch 85] loss=0.1477 [19.0s] dev=({'NDCG@5': 0.32967720306436454, 'HR@5': 0.4552823377154145}) *
+INFO:root:[Stage 1][Epoch 86] loss=0.1444 [19.1s] dev=({'NDCG@5': 0.32956151305387993, 'HR@5': 0.454941761460391})
+INFO:root:[Stage 1][Epoch 87] loss=0.1429 [18.6s] dev=({'NDCG@5': 0.32985108823627973, 'HR@5': 0.4550098767113957}) *
+INFO:root:[Stage 1][Epoch 88] loss=0.1397 [19.0s] dev=({'NDCG@5': 0.33037135422538183, 'HR@5': 0.4552823377154145}) *
+INFO:root:[Stage 1][Epoch 89] loss=0.1383 [19.1s] dev=({'NDCG@5': 0.3304456559903461, 'HR@5': 0.45480553095838155}) *
+INFO:root:[Stage 1][Epoch 90] loss=0.1361 [19.1s] dev=({'NDCG@5': 0.3305234156989701, 'HR@5': 0.45480553095838155}) *
+INFO:root:[Stage 1][Epoch 91] loss=0.1301 [19.0s] dev=({'NDCG@5': 0.3307362771814704, 'HR@5': 0.4550779919624004}) *
+INFO:root:[Stage 1][Epoch 92] loss=0.1298 [19.1s] dev=({'NDCG@5': 0.330329310175587, 'HR@5': 0.4536475716913017})
+INFO:root:[Stage 1][Epoch 93] loss=0.1286 [19.1s] dev=({'NDCG@5': 0.3302468708440435, 'HR@5': 0.45351134118929226})
+INFO:root:[Stage 1][Epoch 94] loss=0.1254 [19.0s] dev=({'NDCG@5': 0.330699833913119, 'HR@5': 0.4539881479463252})
+INFO:root:[Stage 1][Epoch 95] loss=0.1225 [18.0s] dev=({'NDCG@5': 0.33006924136630184, 'HR@5': 0.4528301886792453})
+INFO:root:[Stage 1][Epoch 96] loss=0.1194 [19.1s] dev=({'NDCG@5': 0.3310098633086818, 'HR@5': 0.4539881479463252}) *
+INFO:root:[Stage 1][Epoch 97] loss=0.1164 [19.1s] dev=({'NDCG@5': 0.3305182507344779, 'HR@5': 0.4531026496832641})
+INFO:root:[Stage 1][Epoch 98] loss=0.1152 [18.9s] dev=({'NDCG@5': 0.33002488174541633, 'HR@5': 0.45242149717321706})
+INFO:root:[Stage 1][Epoch 99] loss=0.1139 [19.1s] dev=({'NDCG@5': 0.32982597686477244, 'HR@5': 0.4518084599141748})
+INFO:root:[Stage 1][Epoch 100] loss=0.1108 [19.1s] dev=({'NDCG@5': 0.33002770503068046, 'HR@5': 0.4518084599141748})
+INFO:root:[Stage 1][Epoch 101] loss=0.1080 [19.0s] dev=({'NDCG@5': 0.33010931126153814, 'HR@5': 0.4520809209181936})
+INFO:root:[Stage 1][Epoch 102] loss=0.1061 [19.1s] dev=({'NDCG@5': 0.3298121047618012, 'HR@5': 0.4505823853960902})
+INFO:root:[Stage 1][Epoch 103] loss=0.1037 [18.5s] dev=({'NDCG@5': 0.3298954478645307, 'HR@5': 0.4506505006470949})
+INFO:root:[Stage 1][Epoch 104] loss=0.1026 [19.0s] dev=({'NDCG@5': 0.32950471605528336, 'HR@5': 0.4502418091410667})
+INFO:root:[Stage 1][Epoch 105] loss=0.0995 [19.1s] dev=({'NDCG@5': 0.33025463436678887, 'HR@5': 0.45126353790613716})
+INFO:root:在第 1 阶段第 105 轮发生早停
+INFO:root:开始第 2/3 阶段训练
+INFO:root:[StagewiseBase] Switched to stage 2
+INFO:root:Optimizer: Adam
+INFO:root:[Stage 2][Epoch 1] loss=0.6842 [36.3s] dev=({'NDCG@5': 0.3334845073173523, 'HR@5': 0.4567127579865132}) *
+INFO:root:[Stage 2][Epoch 2] loss=0.6520 [36.2s] dev=({'NDCG@5': 0.33473667923675854, 'HR@5': 0.4584156392616307}) *
+INFO:root:[Stage 2][Epoch 3] loss=0.6280 [35.9s] dev=({'NDCG@5': 0.3339409777241125, 'HR@5': 0.45793883250459777})
+INFO:root:[Stage 2][Epoch 4] loss=0.6016 [36.0s] dev=({'NDCG@5': 0.33405976710432267, 'HR@5': 0.4585518697636401})
+INFO:root:[Stage 2][Epoch 5] loss=0.5829 [36.4s] dev=({'NDCG@5': 0.3347830254759039, 'HR@5': 0.4600504052857435}) *
+INFO:root:[Stage 2][Epoch 6] loss=0.5636 [36.6s] dev=({'NDCG@5': 0.3348940798270901, 'HR@5': 0.4601185205367482}) *
+INFO:root:[Stage 2][Epoch 7] loss=0.5555 [36.4s] dev=({'NDCG@5': 0.3346620896069823, 'HR@5': 0.4599822900347388})
+INFO:root:[Stage 2][Epoch 8] loss=0.5387 [36.5s] dev=({'NDCG@5': 0.3347171764479519, 'HR@5': 0.4601185205367482})
+INFO:root:[Stage 2][Epoch 9] loss=0.5229 [36.6s] dev=({'NDCG@5': 0.3355023636485525, 'HR@5': 0.4608677882977999}) *
+INFO:root:[Stage 2][Epoch 10] loss=0.5102 [36.3s] dev=({'NDCG@5': 0.33474824900766587, 'HR@5': 0.45970982903072})
+INFO:root:[Stage 2][Epoch 11] loss=0.4971 [36.6s] dev=({'NDCG@5': 0.33485623388615293, 'HR@5': 0.45950548327770585})
+INFO:root:[Stage 2][Epoch 12] loss=0.4791 [35.7s] dev=({'NDCG@5': 0.3351142845772585, 'HR@5': 0.4595735985287106})
+INFO:root:[Stage 2][Epoch 13] loss=0.4731 [35.8s] dev=({'NDCG@5': 0.3354256940042485, 'HR@5': 0.4600504052857435})
+INFO:root:[Stage 2][Epoch 14] loss=0.4649 [36.6s] dev=({'NDCG@5': 0.3355993608763426, 'HR@5': 0.46032286628976227}) *
+INFO:root:[Stage 2][Epoch 15] loss=0.4534 [36.5s] dev=({'NDCG@5': 0.33559384267634623, 'HR@5': 0.46039098154076696})
+INFO:root:[Stage 2][Epoch 16] loss=0.4497 [36.6s] dev=({'NDCG@5': 0.33577687796758526, 'HR@5': 0.46039098154076696}) *
+INFO:root:[Stage 2][Epoch 17] loss=0.4415 [36.4s] dev=({'NDCG@5': 0.33540418674906375, 'HR@5': 0.4596417137797153})
+INFO:root:[Stage 2][Epoch 18] loss=0.4301 [36.6s] dev=({'NDCG@5': 0.3348567822275649, 'HR@5': 0.45909679177167767})
+INFO:root:[Stage 2][Epoch 19] loss=0.4238 [36.5s] dev=({'NDCG@5': 0.33535607377964183, 'HR@5': 0.4596417137797153})
+INFO:root:[Stage 2][Epoch 20] loss=0.4131 [35.5s] dev=({'NDCG@5': 0.33547644888943723, 'HR@5': 0.4600504052857435})
+INFO:root:[Stage 2][Epoch 21] loss=0.4075 [36.6s] dev=({'NDCG@5': 0.33492249613588493, 'HR@5': 0.45936925277569646})
+INFO:root:[Stage 2][Epoch 22] loss=0.3972 [35.6s] dev=({'NDCG@5': 0.3352219951967479, 'HR@5': 0.45936925277569646})
+INFO:root:[Stage 2][Epoch 23] loss=0.3975 [36.6s] dev=({'NDCG@5': 0.33495671371644764, 'HR@5': 0.45943736802670115})
+INFO:root:[Stage 2][Epoch 24] loss=0.3871 [36.3s] dev=({'NDCG@5': 0.3349992978016482, 'HR@5': 0.45923302227368706})
+INFO:root:[Stage 2][Epoch 25] loss=0.3792 [36.4s] dev=({'NDCG@5': 0.3347100146417554, 'HR@5': 0.4584156392616307})
+INFO:root:在第 2 阶段第 25 轮发生早停
+INFO:root:开始第 3/3 阶段训练
+INFO:root:[StagewiseBase] Switched to stage 3
+INFO:root:Optimizer: Adam
+INFO:root:[Stage 3][Epoch 1] loss=1.3106 [53.9s] dev=({'NDCG@5': 0.3348588954368801, 'HR@5': 0.4588924460186636}) *
+INFO:root:[Stage 3][Epoch 2] loss=1.2891 [53.8s] dev=({'NDCG@5': 0.33463311975630744, 'HR@5': 0.4589605612696683})
+INFO:root:[Stage 3][Epoch 3] loss=1.2685 [53.3s] dev=({'NDCG@5': 0.3349730158324084, 'HR@5': 0.45930113752469176}) *
+INFO:root:[Stage 3][Epoch 4] loss=1.2510 [53.0s] dev=({'NDCG@5': 0.3349602543795159, 'HR@5': 0.45930113752469176})
+INFO:root:[Stage 3][Epoch 5] loss=1.2367 [53.8s] dev=({'NDCG@5': 0.3347936720779663, 'HR@5': 0.4588243307676589})
+INFO:root:[Stage 3][Epoch 6] loss=1.2159 [53.8s] dev=({'NDCG@5': 0.33452903050988225, 'HR@5': 0.4587562155166542})
+INFO:root:[Stage 3][Epoch 7] loss=1.2080 [53.7s] dev=({'NDCG@5': 0.3349751023348442, 'HR@5': 0.45936925277569646}) *
+INFO:root:[Stage 3][Epoch 8] loss=1.1875 [53.3s] dev=({'NDCG@5': 0.33542034954171, 'HR@5': 0.46025475103875757}) *
+INFO:root:[Stage 3][Epoch 9] loss=1.1747 [53.9s] dev=({'NDCG@5': 0.3348432262918126, 'HR@5': 0.4595735985287106})
+INFO:root:[Stage 3][Epoch 10] loss=1.1559 [53.1s] dev=({'NDCG@5': 0.3353360220580467, 'HR@5': 0.46039098154076696})
+INFO:root:[Stage 3][Epoch 11] loss=1.1407 [53.7s] dev=({'NDCG@5': 0.3353738312066216, 'HR@5': 0.4598460595327294})
+INFO:root:[Stage 3][Epoch 12] loss=1.1310 [53.7s] dev=({'NDCG@5': 0.3352889567922168, 'HR@5': 0.4598460595327294})
+INFO:root:[Stage 3][Epoch 13] loss=1.1155 [53.8s] dev=({'NDCG@5': 0.3352051498469605, 'HR@5': 0.45970982903072})
+INFO:root:[Stage 3][Epoch 14] loss=1.1064 [53.3s] dev=({'NDCG@5': 0.33536578652954285, 'HR@5': 0.45970982903072})
+INFO:root:[Stage 3][Epoch 15] loss=1.0954 [53.8s] dev=({'NDCG@5': 0.3350055261235809, 'HR@5': 0.45916490702268237})
+INFO:root:[Stage 3][Epoch 16] loss=1.0884 [53.3s] dev=({'NDCG@5': 0.33497150533642794, 'HR@5': 0.45943736802670115})
+INFO:root:[Stage 3][Epoch 17] loss=1.0800 [53.9s] dev=({'NDCG@5': 0.3342795412913605, 'HR@5': 0.4584156392616307})
+INFO:root:在第 3 阶段第 17 轮发生早停
+INFO:root:Load model from ../model/StagewiseGCN/StagewiseGCN__Grocery_and_Gourmet_Food__0__lr=0.0001__l2=0.0__n_stages=3__c=0.15__odd_layer=2__even_layer=2.pt
+INFO:root:
+Dev  After Training: (HR@5:0.4603,NDCG@5:0.3354,HR@10:0.5699,NDCG@10:0.3711,HR@20:0.6781,NDCG@20:0.3984,HR@50:0.8501,NDCG@50:0.4325)
+INFO:root:
+Test After Training: (HR@5:0.3866,NDCG@5:0.2701,HR@10:0.5095,NDCG@10:0.3099,HR@20:0.6201,NDCG@20:0.3379,HR@50:0.8136,NDCG@50:0.3762)
+INFO:root:Saving top-100 recommendation results to: ../log/StagewiseGCN/StagewiseGCN__Grocery_and_Gourmet_Food__0__lr=0/rec-StagewiseGCN-dev.csv
+INFO:root:dev Prediction results saved!
+INFO:root:Saving top-100 recommendation results to: ../log/StagewiseGCN/StagewiseGCN__Grocery_and_Gourmet_Food__0__lr=0/rec-StagewiseGCN-test.csv
+INFO:root:test Prediction results saved!
+INFO:root:
+--------------------------------------------- END: 2025-12-30 04:36:03 ---------------------------------------------

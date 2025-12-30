@@ -1,0 +1,97 @@
+INFO:root:Namespace(model_name='NeuMF', model_mode='')
+INFO:root:--------------------------------------------- BEGIN: 2025-12-29 23:13:37 ---------------------------------------------
+INFO:root:
+===========================================
+ Arguments          | Values               
+===========================================
+ batch_size         | 512                 
+ data_appendix      |                     
+ dataset            | Grocery_and_Gourm...
+ dropout            | 0.2                 
+ early_stop         | 10                  
+ emb_size           | 64                  
+ epoch              | 200                 
+ eval_batch_size    | 512                 
+ gpu                | 0                   
+ l2                 | 1e-07               
+ layers             | [64]                
+ lr                 | 0.0005              
+ main_metric        |                     
+ num_neg            | 1                   
+ num_workers        | 5                   
+ optimizer          | Adam                
+ random_seed        | 0                   
+ save_final_results | 1                   
+ test_all           | 0                   
+ topk               | 5,10,20,50          
+===========================================
+INFO:root:Device: cuda
+INFO:root:Load corpus from data/Grocery_and_Gourmet_Food/BaseReader.pkl
+INFO:root:#params: 3003072
+INFO:root:NeuMF(
+  (mf_u_embeddings): Embedding(14682, 64)
+  (mf_i_embeddings): Embedding(8714, 64)
+  (mlp_u_embeddings): Embedding(14682, 64)
+  (mlp_i_embeddings): Embedding(8714, 64)
+  (mlp): ModuleList(
+    (0): Linear(in_features=128, out_features=64, bias=True)
+  )
+  (dropout_layer): Dropout(p=0.2, inplace=False)
+  (prediction): Linear(in_features=128, out_features=1, bias=False)
+)
+INFO:root:Test Before Training: (HR@5:0.0524,NDCG@5:0.0301,HR@10:0.1010,NDCG@10:0.0456,HR@20:0.1978,NDCG@20:0.0698,HR@50:0.4901,NDCG@50:0.1269)
+INFO:root:Optimizer: Adam
+INFO:root:Epoch 1     loss=0.5774 [5.0 s]	dev=(HR@5:0.2411,NDCG@5:0.1592) [0.3 s] *
+INFO:root:Epoch 2     loss=0.4484 [4.0 s]	dev=(HR@5:0.2402,NDCG@5:0.1602) [0.3 s] *
+INFO:root:Epoch 3     loss=0.4320 [4.0 s]	dev=(HR@5:0.2421,NDCG@5:0.1611) [0.3 s] *
+INFO:root:Epoch 4     loss=0.4191 [4.0 s]	dev=(HR@5:0.2503,NDCG@5:0.1680) [0.2 s] *
+INFO:root:Epoch 5     loss=0.4004 [4.0 s]	dev=(HR@5:0.2616,NDCG@5:0.1749) [0.3 s] *
+INFO:root:Epoch 6     loss=0.3744 [3.9 s]	dev=(HR@5:0.2773,NDCG@5:0.1886) [0.3 s] *
+INFO:root:Epoch 7     loss=0.3421 [3.8 s]	dev=(HR@5:0.2939,NDCG@5:0.2003) [0.3 s] *
+INFO:root:Epoch 8     loss=0.3075 [3.9 s]	dev=(HR@5:0.3090,NDCG@5:0.2135) [0.3 s] *
+INFO:root:Epoch 9     loss=0.2706 [4.0 s]	dev=(HR@5:0.3312,NDCG@5:0.2297) [0.3 s] *
+INFO:root:Epoch 10    loss=0.2356 [4.0 s]	dev=(HR@5:0.3430,NDCG@5:0.2393) [0.3 s] *
+INFO:root:Epoch 11    loss=0.2033 [3.9 s]	dev=(HR@5:0.3548,NDCG@5:0.2469) [0.3 s] *
+INFO:root:Epoch 12    loss=0.1745 [3.3 s]	dev=(HR@5:0.3608,NDCG@5:0.2519) [0.3 s] *
+INFO:root:Epoch 13    loss=0.1507 [3.9 s]	dev=(HR@5:0.3679,NDCG@5:0.2588) [0.3 s] *
+INFO:root:Epoch 14    loss=0.1301 [4.0 s]	dev=(HR@5:0.3742,NDCG@5:0.2637) [0.3 s] *
+INFO:root:Epoch 15    loss=0.1110 [4.0 s]	dev=(HR@5:0.3781,NDCG@5:0.2652) [0.3 s] *
+INFO:root:Epoch 16    loss=0.0971 [4.0 s]	dev=(HR@5:0.3804,NDCG@5:0.2694) [0.3 s] *
+INFO:root:Epoch 17    loss=0.0846 [4.0 s]	dev=(HR@5:0.3820,NDCG@5:0.2697) [0.3 s] *
+INFO:root:Epoch 18    loss=0.0743 [3.9 s]	dev=(HR@5:0.3827,NDCG@5:0.2698) [0.3 s] *
+INFO:root:Epoch 19    loss=0.0659 [3.9 s]	dev=(HR@5:0.3853,NDCG@5:0.2731) [0.3 s] *
+INFO:root:Epoch 20    loss=0.0575 [4.0 s]	dev=(HR@5:0.3843,NDCG@5:0.2741) [0.3 s] *
+INFO:root:Epoch 21    loss=0.0510 [4.0 s]	dev=(HR@5:0.3864,NDCG@5:0.2759) [0.3 s] *
+INFO:root:Epoch 22    loss=0.0462 [4.0 s]	dev=(HR@5:0.3899,NDCG@5:0.2777) [0.3 s] *
+INFO:root:Epoch 23    loss=0.0415 [4.0 s]	dev=(HR@5:0.3900,NDCG@5:0.2771) [0.3 s]
+INFO:root:Epoch 24    loss=0.0374 [3.9 s]	dev=(HR@5:0.3878,NDCG@5:0.2764) [0.3 s]
+INFO:root:Epoch 25    loss=0.0349 [3.9 s]	dev=(HR@5:0.3879,NDCG@5:0.2762) [0.3 s]
+INFO:root:Epoch 26    loss=0.0320 [3.9 s]	dev=(HR@5:0.3870,NDCG@5:0.2758) [0.3 s]
+INFO:root:Epoch 27    loss=0.0293 [4.0 s]	dev=(HR@5:0.3862,NDCG@5:0.2764) [0.3 s]
+INFO:root:Epoch 28    loss=0.0274 [3.9 s]	dev=(HR@5:0.3897,NDCG@5:0.2782) [0.3 s] *
+INFO:root:Epoch 29    loss=0.0247 [4.0 s]	dev=(HR@5:0.3898,NDCG@5:0.2784) [0.3 s] *
+INFO:root:Epoch 30    loss=0.0233 [3.9 s]	dev=(HR@5:0.3902,NDCG@5:0.2782) [0.3 s]
+INFO:root:Epoch 31    loss=0.0213 [3.9 s]	dev=(HR@5:0.3928,NDCG@5:0.2801) [0.3 s] *
+INFO:root:Epoch 32    loss=0.0207 [3.9 s]	dev=(HR@5:0.3923,NDCG@5:0.2797) [0.3 s]
+INFO:root:Epoch 33    loss=0.0191 [4.0 s]	dev=(HR@5:0.3907,NDCG@5:0.2790) [0.3 s]
+INFO:root:Epoch 34    loss=0.0177 [4.0 s]	dev=(HR@5:0.3899,NDCG@5:0.2784) [0.3 s]
+INFO:root:Epoch 35    loss=0.0172 [3.9 s]	dev=(HR@5:0.3908,NDCG@5:0.2784) [0.3 s]
+INFO:root:Epoch 36    loss=0.0167 [4.0 s]	dev=(HR@5:0.3907,NDCG@5:0.2790) [0.3 s]
+INFO:root:Epoch 37    loss=0.0152 [4.0 s]	dev=(HR@5:0.3901,NDCG@5:0.2784) [0.3 s]
+INFO:root:Epoch 38    loss=0.0157 [3.9 s]	dev=(HR@5:0.3903,NDCG@5:0.2794) [0.3 s]
+INFO:root:Epoch 39    loss=0.0142 [4.0 s]	dev=(HR@5:0.3904,NDCG@5:0.2784) [0.3 s]
+INFO:root:Epoch 40    loss=0.0139 [4.0 s]	dev=(HR@5:0.3909,NDCG@5:0.2784) [0.3 s]
+INFO:root:Early stop at 40 based on dev result.
+INFO:root:
+Best Iter(dev)=   31	 dev=(HR@5:0.3928,NDCG@5:0.2801) [169.8 s] 
+INFO:root:Load model from ../model/NeuMF/NeuMF__Grocery_and_Gourmet_Food__0__lr=0.0005__l2=1e-07__emb_size=64__layers=[64].pt
+INFO:root:
+Dev  After Training: (HR@5:0.3928,NDCG@5:0.2801,HR@10:0.4971,NDCG@10:0.3141,HR@20:0.6092,NDCG@20:0.3423,HR@50:0.7942,NDCG@50:0.3788)
+INFO:root:
+Test After Training: (HR@5:0.3324,NDCG@5:0.2272,HR@10:0.4459,NDCG@10:0.2641,HR@20:0.5544,NDCG@20:0.2914,HR@50:0.7495,NDCG@50:0.3298)
+INFO:root:Saving top-100 recommendation results to: ../log/NeuMF/NeuMF__Grocery_and_Gourmet_Food__0__lr=0/rec-NeuMF-dev.csv
+INFO:root:dev Prediction results saved!
+INFO:root:Saving top-100 recommendation results to: ../log/NeuMF/NeuMF__Grocery_and_Gourmet_Food__0__lr=0/rec-NeuMF-test.csv
+INFO:root:test Prediction results saved!
+INFO:root:
+--------------------------------------------- END: 2025-12-29 23:16:34 ---------------------------------------------

@@ -1,0 +1,85 @@
+INFO:root:Namespace(model_name='AblationStagewiseGCN', model_mode='')
+INFO:root:--------------------------------------------- BEGIN: 2025-12-30 12:22:10 ---------------------------------------------
+INFO:root:
+=================================
+ Arguments          | Values     
+=================================
+ batch_size         | 512       
+ c                  | 0.1       
+ data_appendix      |           
+ dataset            | ML_1MTOPK 
+ dropout            | 0         
+ early_stop         | 10        
+ emb_size           | 64        
+ enabled_stage      | 3         
+ epoch              | 500       
+ eval_batch_size    | 512       
+ even_layer         | 2         
+ gpu                | 0         
+ l2                 | 0.0       
+ lr                 | 0.0001    
+ main_metric        |           
+ n_layers           | 3         
+ n_stages           | 3         
+ num_neg            | 1         
+ num_workers        | 5         
+ odd_layer          | 3         
+ optimizer          | Adam      
+ random_seed        | 0         
+ save_final_results | 1         
+ test_all           | 0         
+ topk               | 5,10,20,50
+=================================
+INFO:root:Device: cuda
+INFO:root:Load corpus from data/ML_1MTOPK/BaseReader.pkl
+INFO:root:[StagewiseBase] Initializing model with emb_size=64, n_layers=3
+INFO:root:[StagewiseBase] Preparing stage-wise normalized adjacency matrices
+INFO:root:[StagewiseBase] Stage 1 normalized adjacency matrix shape: (9159, 9159), nnz: 1146681
+INFO:root:[StagewiseBase] Stage 2 normalized adjacency matrix shape: (9159, 9159), nnz: 1146681
+INFO:root:[StagewiseBase] Stage 3 normalized adjacency matrix shape: (9159, 9159), nnz: 1146681
+INFO:root:[StagewiseBase] Defining encoder with stage 1 norm_adj
+INFO:root:#params: 586176
+INFO:root:AblationStagewiseGCN(
+  (encoder): _LGCNEncoder(
+    (embedding_dict): ParameterDict(
+        (item_emb): Parameter containing: [torch.cuda.FloatTensor of size 3126x64 (cuda:0)]
+        (user_emb): Parameter containing: [torch.cuda.FloatTensor of size 6033x64 (cuda:0)]
+    )
+  )
+)
+INFO:root:Test Before Training: (HR@5:0.2947,NDCG@5:0.1967,HR@10:0.4360,NDCG@10:0.2422,HR@20:0.6002,NDCG@20:0.2834,HR@50:0.8594,NDCG@50:0.3354)
+INFO:root:开始第 3/3 阶段训练
+INFO:root:[StagewiseBase] Switched to stage 3
+INFO:root:Optimizer: Adam
+INFO:root:[Stage 3][Epoch 1] loss=3.7070 [117.1s] dev=({'NDCG@5': 0.23335930598090773, 'HR@5': 0.3469945355191257}) *
+INFO:root:[Stage 3][Epoch 2] loss=3.5555 [116.1s] dev=({'NDCG@5': 0.24282335318584303, 'HR@5': 0.3669008587041374}) *
+INFO:root:[Stage 3][Epoch 3] loss=3.4349 [116.1s] dev=({'NDCG@5': 0.24228048578558917, 'HR@5': 0.3669008587041374})
+INFO:root:[Stage 3][Epoch 4] loss=3.3945 [116.1s] dev=({'NDCG@5': 0.2442114747850143, 'HR@5': 0.3700234192037471}) *
+INFO:root:[Stage 3][Epoch 5] loss=3.3500 [116.1s] dev=({'NDCG@5': 0.24618640532192912, 'HR@5': 0.3739266198282592}) *
+INFO:root:[Stage 3][Epoch 6] loss=3.2950 [116.1s] dev=({'NDCG@5': 0.25068756755593097, 'HR@5': 0.3762685402029664}) *
+INFO:root:[Stage 3][Epoch 7] loss=3.2344 [116.1s] dev=({'NDCG@5': 0.25304960563409595, 'HR@5': 0.3770491803278688}) *
+INFO:root:[Stage 3][Epoch 8] loss=3.1792 [116.1s] dev=({'NDCG@5': 0.25411487143595074, 'HR@5': 0.37782982045277125}) *
+INFO:root:[Stage 3][Epoch 9] loss=3.1357 [116.1s] dev=({'NDCG@5': 0.25460463976401704, 'HR@5': 0.37861046057767367}) *
+INFO:root:[Stage 3][Epoch 10] loss=3.0983 [116.1s] dev=({'NDCG@5': 0.2546002273485678, 'HR@5': 0.37782982045277125})
+INFO:root:[Stage 3][Epoch 11] loss=3.0673 [116.1s] dev=({'NDCG@5': 0.2546506875875376, 'HR@5': 0.3766588602654176}) *
+INFO:root:[Stage 3][Epoch 12] loss=3.0372 [116.1s] dev=({'NDCG@5': 0.2524146329169261, 'HR@5': 0.37236533957845436})
+INFO:root:[Stage 3][Epoch 13] loss=3.0064 [116.0s] dev=({'NDCG@5': 0.2536343804969775, 'HR@5': 0.3739266198282592})
+INFO:root:[Stage 3][Epoch 14] loss=2.9815 [116.1s] dev=({'NDCG@5': 0.2540739208648453, 'HR@5': 0.3758782201405152})
+INFO:root:[Stage 3][Epoch 15] loss=2.9633 [116.1s] dev=({'NDCG@5': 0.25354969921924453, 'HR@5': 0.3758782201405152})
+INFO:root:[Stage 3][Epoch 16] loss=2.9466 [116.1s] dev=({'NDCG@5': 0.25415158956820505, 'HR@5': 0.3766588602654176})
+INFO:root:[Stage 3][Epoch 17] loss=2.9255 [116.0s] dev=({'NDCG@5': 0.2534287123281467, 'HR@5': 0.3758782201405152})
+INFO:root:[Stage 3][Epoch 18] loss=2.9135 [116.1s] dev=({'NDCG@5': 0.25392452587862924, 'HR@5': 0.3762685402029664})
+INFO:root:[Stage 3][Epoch 19] loss=2.9037 [116.1s] dev=({'NDCG@5': 0.2540905932412908, 'HR@5': 0.3770491803278688})
+INFO:root:[Stage 3][Epoch 20] loss=2.8929 [116.1s] dev=({'NDCG@5': 0.25375487325166235, 'HR@5': 0.37782982045277125})
+INFO:root:在第 3 阶段第 20 轮发生早停
+INFO:root:Load model from ../model/AblationStagewiseGCN/AblationStagewiseGCN__ML_1MTOPK__0__lr=0.0001__l2=0.0__n_stages=3__c=0.1__odd_layer=3__even_layer=2__enabled_stage=3.pt
+INFO:root:
+Dev  After Training: (HR@5:0.3767,NDCG@5:0.2547,HR@10:0.5496,NDCG@10:0.3105,HR@20:0.7389,NDCG@20:0.3584,HR@50:0.9356,NDCG@50:0.3981)
+INFO:root:
+Test After Training: (HR@5:0.3793,NDCG@5:0.2536,HR@10:0.5358,NDCG@10:0.3036,HR@20:0.7370,NDCG@20:0.3543,HR@50:0.9415,NDCG@50:0.3953)
+INFO:root:Saving top-100 recommendation results to: ../log/AblationStagewiseGCN/AblationStagewiseGCN__ML_1MTOPK__0__lr=0/rec-AblationStagewiseGCN-dev.csv
+INFO:root:dev Prediction results saved!
+INFO:root:Saving top-100 recommendation results to: ../log/AblationStagewiseGCN/AblationStagewiseGCN__ML_1MTOPK__0__lr=0/rec-AblationStagewiseGCN-test.csv
+INFO:root:test Prediction results saved!
+INFO:root:
+--------------------------------------------- END: 2025-12-30 13:01:07 ---------------------------------------------

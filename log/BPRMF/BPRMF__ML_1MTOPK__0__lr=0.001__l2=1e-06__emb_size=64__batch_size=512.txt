@@ -1,0 +1,80 @@
+INFO:root:Namespace(model_name='BPRMF', model_mode='')
+INFO:root:--------------------------------------------- BEGIN: 2025-12-29 23:16:36 ---------------------------------------------
+INFO:root:
+=================================
+ Arguments          | Values     
+=================================
+ batch_size         | 512       
+ data_appendix      |           
+ dataset            | ML_1MTOPK 
+ dropout            | 0         
+ early_stop         | 10        
+ emb_size           | 64        
+ epoch              | 200       
+ eval_batch_size    | 512       
+ gpu                | 0         
+ l2                 | 1e-06     
+ lr                 | 0.001     
+ main_metric        |           
+ num_neg            | 1         
+ num_workers        | 5         
+ optimizer          | Adam      
+ random_seed        | 0         
+ save_final_results | 1         
+ test_all           | 0         
+ topk               | 5,10,20,50
+=================================
+INFO:root:Device: cuda
+INFO:root:Load corpus from data/ML_1MTOPK/BaseReader.pkl
+INFO:root:#params: 586176
+INFO:root:BPRMF(
+  (u_embeddings): Embedding(6033, 64)
+  (i_embeddings): Embedding(3126, 64)
+)
+INFO:root:Test Before Training: (HR@5:0.0532,NDCG@5:0.0321,HR@10:0.1033,NDCG@10:0.0480,HR@20:0.2119,NDCG@20:0.0750,HR@50:0.5052,NDCG@50:0.1323)
+INFO:root:Optimizer: Adam
+INFO:root:Epoch 1     loss=0.4543 [17.4 s]	dev=(HR@5:0.3435,NDCG@5:0.2297) [0.2 s] *
+INFO:root:Epoch 2     loss=0.3057 [16.1 s]	dev=(HR@5:0.3692,NDCG@5:0.2477) [0.1 s] *
+INFO:root:Epoch 3     loss=0.2765 [16.5 s]	dev=(HR@5:0.3751,NDCG@5:0.2499) [0.2 s] *
+INFO:root:Epoch 4     loss=0.2561 [16.1 s]	dev=(HR@5:0.3767,NDCG@5:0.2520) [0.2 s] *
+INFO:root:Epoch 5     loss=0.2382 [16.2 s]	dev=(HR@5:0.3833,NDCG@5:0.2568) [0.2 s] *
+INFO:root:Epoch 6     loss=0.2232 [16.1 s]	dev=(HR@5:0.3915,NDCG@5:0.2637) [0.2 s] *
+INFO:root:Epoch 7     loss=0.2110 [16.1 s]	dev=(HR@5:0.3973,NDCG@5:0.2655) [0.2 s] *
+INFO:root:Epoch 8     loss=0.2016 [14.7 s]	dev=(HR@5:0.3954,NDCG@5:0.2661) [0.2 s] *
+INFO:root:Epoch 9     loss=0.1936 [16.3 s]	dev=(HR@5:0.3938,NDCG@5:0.2678) [0.2 s] *
+INFO:root:Epoch 10    loss=0.1868 [17.2 s]	dev=(HR@5:0.3989,NDCG@5:0.2687) [0.2 s] *
+INFO:root:Epoch 11    loss=0.1810 [18.8 s]	dev=(HR@5:0.4063,NDCG@5:0.2729) [0.2 s] *
+INFO:root:Epoch 12    loss=0.1760 [18.6 s]	dev=(HR@5:0.4012,NDCG@5:0.2705) [0.2 s]
+INFO:root:Epoch 13    loss=0.1700 [18.5 s]	dev=(HR@5:0.3985,NDCG@5:0.2687) [0.2 s]
+INFO:root:Epoch 14    loss=0.1647 [18.7 s]	dev=(HR@5:0.4075,NDCG@5:0.2733) [0.2 s] *
+INFO:root:Epoch 15    loss=0.1623 [18.7 s]	dev=(HR@5:0.4059,NDCG@5:0.2736) [0.2 s] *
+INFO:root:Epoch 16    loss=0.1578 [18.6 s]	dev=(HR@5:0.4083,NDCG@5:0.2745) [0.3 s] *
+INFO:root:Epoch 17    loss=0.1529 [18.8 s]	dev=(HR@5:0.4001,NDCG@5:0.2731) [0.2 s]
+INFO:root:Epoch 18    loss=0.1491 [18.5 s]	dev=(HR@5:0.4063,NDCG@5:0.2753) [0.2 s] *
+INFO:root:Epoch 19    loss=0.1461 [18.7 s]	dev=(HR@5:0.3997,NDCG@5:0.2718) [0.2 s]
+INFO:root:Epoch 20    loss=0.1429 [18.8 s]	dev=(HR@5:0.4012,NDCG@5:0.2715) [0.2 s]
+INFO:root:Epoch 21    loss=0.1387 [18.6 s]	dev=(HR@5:0.4036,NDCG@5:0.2754) [0.2 s] *
+INFO:root:Epoch 22    loss=0.1359 [18.8 s]	dev=(HR@5:0.4067,NDCG@5:0.2756) [0.2 s] *
+INFO:root:Epoch 23    loss=0.1335 [18.7 s]	dev=(HR@5:0.4052,NDCG@5:0.2739) [0.2 s]
+INFO:root:Epoch 24    loss=0.1304 [18.6 s]	dev=(HR@5:0.3989,NDCG@5:0.2714) [0.2 s]
+INFO:root:Epoch 25    loss=0.1278 [18.1 s]	dev=(HR@5:0.4063,NDCG@5:0.2741) [0.2 s]
+INFO:root:Epoch 26    loss=0.1245 [18.6 s]	dev=(HR@5:0.3966,NDCG@5:0.2692) [0.2 s]
+INFO:root:Epoch 27    loss=0.1226 [18.2 s]	dev=(HR@5:0.3973,NDCG@5:0.2698) [0.1 s]
+INFO:root:Epoch 28    loss=0.1196 [9.7 s]	dev=(HR@5:0.3958,NDCG@5:0.2692) [0.1 s]
+INFO:root:Epoch 29    loss=0.1174 [8.7 s]	dev=(HR@5:0.3895,NDCG@5:0.2638) [0.1 s]
+INFO:root:Epoch 30    loss=0.1158 [6.5 s]	dev=(HR@5:0.3884,NDCG@5:0.2622) [0.1 s]
+INFO:root:Epoch 31    loss=0.1138 [6.2 s]	dev=(HR@5:0.3888,NDCG@5:0.2658) [0.1 s]
+INFO:root:Early stop at 31 based on dev result.
+INFO:root:
+Best Iter(dev)=   22	 dev=(HR@5:0.4067,NDCG@5:0.2756) [515.5 s] 
+INFO:root:Load model from ../model/BPRMF/BPRMF__ML_1MTOPK__0__lr=0.001__l2=1e-06__emb_size=64__batch_size=512.pt
+INFO:root:
+Dev  After Training: (HR@5:0.4067,NDCG@5:0.2756,HR@10:0.5695,NDCG@10:0.3281,HR@20:0.7611,NDCG@20:0.3765,HR@50:0.9496,NDCG@50:0.4145)
+INFO:root:
+Test After Training: (HR@5:0.3859,NDCG@5:0.2599,HR@10:0.5567,NDCG@10:0.3148,HR@20:0.7564,NDCG@20:0.3652,HR@50:0.9513,NDCG@50:0.4044)
+INFO:root:Saving top-100 recommendation results to: ../log/BPRMF/BPRMF__ML_1MTOPK__0__lr=0/rec-BPRMF-dev.csv
+INFO:root:dev Prediction results saved!
+INFO:root:Saving top-100 recommendation results to: ../log/BPRMF/BPRMF__ML_1MTOPK__0__lr=0/rec-BPRMF-test.csv
+INFO:root:test Prediction results saved!
+INFO:root:
+--------------------------------------------- END: 2025-12-29 23:25:16 ---------------------------------------------
