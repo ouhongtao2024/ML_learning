@@ -38,6 +38,7 @@ class _LightGCNBase(object):
         self.norm_adj = self.build_adjmat(
             corpus.n_users, corpus.n_items, corpus.train_clicked_set
         )
+        self.n_stages = args.n_stages
         self._base_define_params()
         self.apply(self.init_weights)
 
@@ -48,7 +49,7 @@ class _LightGCNBase(object):
             self.emb_size,
             self.norm_adj,
             self.n_layers,
-            self,
+            self.n_stages,
         )
 
     def forward(self, feed_dict: dict[str, any]):
