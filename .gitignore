@@ -11,3 +11,6 @@ search.py
 
 data/
 log/
+
+# 忽略实验绘图代码
+draw/
