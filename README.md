@@ -38,8 +38,6 @@
 
 > 本仓库**未上传训练得到的模型文件**（体积较大），但已完整保留实验日志，可用于结果复现与核查。
 
----
-
 ## 二、目录结构说明
 
 ```text
@@ -72,8 +70,6 @@
 ├── README_origin.md            # 保留原仓库的 README.md
 └── README.md                   # 本文件
 ```
-
----
 
 ## 三、我们新增与修改的内容
 
@@ -121,10 +117,23 @@ Recommendation*，[访问链接](https://dl.acm.org/doi/10.1145/3397271.3401163)
 
 ### 1. 环境配置
 
-建议使用 Python 虚拟环境：
+建议使用 Python 虚拟环境、并使用 cuda 运行（因为原框架含有必须使用 cuda 的语句）：
 
 ```bash
 pip install -r requirements.txt
+```
+
+已经验证过可以运行的环境（理论上只要不是太低的 torch 和 python 版本都可以运行）：
+
+```txt
+Python == 3.11.9
+torch==2.9.1
+tqdm==4.66.1
+pandas==2.3.3
+numpy==2.4.0
+scikit-learn==1.8.0
+scipy==1.16.3
+PyYAML==6.0.3
 ```
 
 ### 2. Baseline 实验
