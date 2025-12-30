@@ -75,7 +75,8 @@ class AblationStagewiseBase(_LightGCNBase):
         """
         self.emb_size = args.emb_size
         self.n_layers = args.n_layers
-        self.current_stage = 1  # 默认阶段1
+        self.enabled_stage = args.enabled_stage
+        self.current_stage = self.enabled_stage  # 默认阶段1
         self.stage_norm_adj: dict[int, sp.csr_matrix] = {}  # 存储各阶段归一化矩阵
         self.corpus = corpus
         self.stages = args.n_stages
@@ -84,7 +85,7 @@ class AblationStagewiseBase(_LightGCNBase):
         self.odd_layer = args.odd_layer
         self.even_layer = args.even_layer
         self.l2 = args.l2
-        self.enabled_stage = args.enabled_stage
+        
 
         logging.info(
             f"[StagewiseBase] Initializing model with emb_size={self.emb_size}, n_layers={self.n_layers}"
@@ -215,14 +216,13 @@ class AblationStagewiseBase(_LightGCNBase):
         )
 
     def forward(self, feed_dict):
-        return self._forward_stagewise(feed_dict, self.current_stage)
+        return self._forward_stagewise(feed_dict, self.enabled_stage)
 
-    def _forward_stagewise(
-        self, feed_dict: Dict[str, Any], num_stages: int
+    def _foward_single_stage(
+        self, feed_dict: Dict[str, Any], stage: int
     ) -> Dict[str, Any]:
         """
-        通用 stage-wise forward
-        支持任意阶段数的训练与 embedding 记录
+        单颗粒度的 forward ， 可以使用这个进行消融实验
         """
         user, items = feed_dict["user_id"], feed_dict["item_id"]
 
@@ -232,25 +232,20 @@ class AblationStagewiseBase(_LightGCNBase):
         even_item_embs: List[torch.Tensor] = []
         odd_score_list: List[torch.Tensor] = []
         even_score_list: List[torch.Tensor] = []
-
-        for stage in range(1, num_stages + 1):
-            odd_u, odd_i = self.encoder(user, items, self.odd_layer, stage)
-            even_u, even_i = self.encoder(user, items, self.even_layer, stage)
-
-            odd_user_embs.append(odd_u)
-            odd_item_embs.append(odd_i)
-            even_user_embs.append(even_u)
-            even_item_embs.append(even_i)
-
-            stage_odd_score = (odd_u[:, None, :] * odd_i).sum(dim=-1)
-            stage_even_score = (even_u[:, None, :] * even_i).sum(dim=-1)
-
-            if odd_score_list is None:
-                odd_score_list = [stage_odd_score]
-                even_score_list = [stage_even_score]
-            else:
-                odd_score_list.append(stage_odd_score)
-                even_score_list.append(stage_even_score)
+        odd_u, odd_i = self.encoder(user, items, self.odd_layer, stage)
+        even_u, even_i = self.encoder(user, items, self.even_layer, stage)
+        odd_user_embs.append(odd_u)
+        odd_item_embs.append(odd_i)
+        even_user_embs.append(even_u)
+        even_item_embs.append(even_i)
+        stage_odd_score = (odd_u[:, None, :] * odd_i).sum(dim=-1)
+        stage_even_score = (even_u[:, None, :] * even_i).sum(dim=-1)
+        if odd_score_list is None:
+            odd_score_list = [stage_odd_score]
+            even_score_list = [stage_even_score]
+        else:
+            odd_score_list.append(stage_odd_score)
+            even_score_list.append(stage_even_score)
 
         prediction = sum(odd_score_list) + sum(even_score_list)
 
@@ -313,8 +308,6 @@ class AblationStagewiseGCN(AblationStagewiseBase, GeneralModel):
             even_loss = F.softplus(neg_even - pos_even).mean()
 
             stage_losses += odd_loss + even_loss
-
-        # 默认：所有 stage 等权
 
         # -------- Stage-wise L2 regularization --------
         reg_loss = 0.0
